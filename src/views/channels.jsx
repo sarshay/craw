@@ -10,8 +10,6 @@ import { FreeMode, Pagination } from "swiper";
 import CardContent from '@mui/material/CardContent';
 import { CardActionArea } from '@mui/material';
 import { headTagMaker } from '../services/document';
-// import "swiper/css";
-// import "swiper/css/navigation";
 
 
 function Channels(props) {
