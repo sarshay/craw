@@ -1,0 +1,19 @@
+RewriteEngine On
+
+#RewriteCond %{HTTP_HOST} !^www.heinsoe.com$ [NC]
+#RewriteRule ^(.*)$ http://www.heinsoe.com/$1 [L,R=301]
+
+RewriteCond %{REQUEST_FILENAME} !-s
+RewriteCond %{REQUEST_FILENAME} !-l
+Rewritecond %{REQUEST_FILENAME} !-d
+Rewritecond %{REQUEST_FILENAME} !-f
+
+
+RewriteRule ^.*$ index.html [NC,L]
+
+# php -- BEGIN cPanel-generated handler, do not edit
+# Set the “ea-php74” package as the default “PHP” programming language.
+<IfModule mime_module>
+    AddType application/x-httpd-php .html .htm
+</IfModule>
+# php -- END cPanel-generated handler, do not edit
