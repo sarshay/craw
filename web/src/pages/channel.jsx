@@ -14,15 +14,15 @@ function ChannelPage(props) {
     let { channelId } = useParams();
     const theWp = website.find(w => w.id == channelId);
     const [searchParams, setSearchParams] = useSearchParams();
-    const currentCat = searchParams.get("c")
+    const categoryId = searchParams.get("c")
 
-    const [oldData, setOldData] = useState([]);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const [loading, setLoadig] = useState(true);
     const [message, setMessage] = useState(false);
 
     const [category, setCategory] = useState([])
+    const cuttentCat = category?.find(cat => cat.id == categoryId)
     const [posts, setPosts] = useState([])
     const [categoryLoading, setCategoryLoading] = useState([])
 
@@ -50,9 +50,11 @@ function ChannelPage(props) {
     const fetchPost = () => {
         setLoadig(true)
         // setWpError(null)
-        wp.getPost({ categories: currentCat, page: page }).then((data) => {
+        wp.getPost({ categories: categoryId, page: page }).then((data) => {
             setPosts(old => [...old, ...data]);
+            setMessage(cuttentCat?.count - posts?.length)
         }).catch((error) => {
+            setHasMore(false)
             messageAPi.error(error?.message);
             // setWpError(error?.message)
         }).finally(() => {
@@ -60,26 +62,27 @@ function ChannelPage(props) {
         });
     };
     useEffect(() => {
+        setHasMore(true)
         setPosts([])
         setPage(1)
-        fetchPost()
-    }, [theWp, currentCat])
+    }, [theWp, categoryId])
 
     const loadMore = () => {
-        if (hasMore && !loading) {
-            setMessage("")
+        if (theWp && hasMore && !loading) {
             setPage((pre) => pre + 1);
-            console.log("loading page:" + page)
-            console.log("has more", hasMore)
+            // console.log("loading page:" + page)
+            // console.log("has more", hasMore)
+        } else {
+            messageAPi.error("no");
         }
     }
     useEffect(() => {
         fetchPost()
-    }, [page])
+    }, [page, theWp, categoryId])
     return (
         <div key={channelId}>
             {categoryLoading ? <Spin /> : <Menu
-                selectedKeys={[currentCat]} mode="horizontal" items={category.map(c => {
+                selectedKeys={[categoryId]} mode="horizontal" items={category.map(c => {
                     return {
                         label: <Link to={`${APP_ROUTES.CHANNEL_ID(channelId)}?c=${c.id}`}>{c.name} [${c.count}]</Link>,
                         key: c.id,
@@ -95,12 +98,15 @@ function ChannelPage(props) {
                 }
             </Row>
 
-            {loading && <Spin />}
             <InfiniteScroll
                 loadMore={loadMore}
                 loading={loading}
                 hasMore={hasMore}
             />
+            {loading && <Spin />}
+            <div style={{ position: 'sticky', bottom: 0 }}>
+                <center>{message}</center>
+            </div>
         </div>
     );
 }
