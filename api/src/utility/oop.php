@@ -10,7 +10,7 @@ function makeUp($data, $schema, $required = false)
 
     $ready = [];
     $requiredList = [];
-
+    // var_dump($data);
     foreach ($data as $item) {
         $temp = [];
         // var_dump($schema);

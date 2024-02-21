@@ -55,7 +55,8 @@ export function sortThis(a, b, prop) {
 }
 
 export function makeFresh({ old, fresh }) {
-  const index = old.findIndex((x) => x.id === fresh.id);
+  const index = (old || []).findIndex((x) => x.id === fresh.id);
+  // console.log({ old, fresh, index });
   if (index !== -1) {
     const newData = [...old];
     newData[index] = fresh;

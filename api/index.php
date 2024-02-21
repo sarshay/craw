@@ -1,5 +1,5 @@
 <?php
-
+include __DIR__ . '/env.php';
 include_once __DIR__ . '/cors.php';
 
 // Include utility files

@@ -26,6 +26,9 @@ switch ($method) {
         if (theUser()) {
             $body = makeUp($_POST, $schema[$method], true);
             $res = InsertData($table, $body);
+            
+            // var_dump($res);
+            // var_dump($body);
             jsonResponse(201, makeUp($res, $cols));
         } else {
             httpStatus(403);

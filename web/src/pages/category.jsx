@@ -17,7 +17,7 @@ function CategoryPage(props) {
     const { messageAPi } = useComponentState();
 
     const [form] = useForm();
-    console.log(form)
+    // console.log(form)
     useEffect(() => {
         form.resetFields()
         form.setFieldsValue(selected)

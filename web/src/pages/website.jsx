@@ -47,7 +47,7 @@ function WebsitePage(props) {
             {props.label}
             <Table
                 title={() => <Space>
-                    <Button type="primary" onClick={() => setSelected({})}>
+                    <Button type="primary" onClick={() => setSelected({status:'active'})}>
                         New</Button>
                 </Space>}
                 columns={columns}

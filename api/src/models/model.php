@@ -1,8 +1,9 @@
 <?php
 
+require_once __DIR__ . "/../helper/connection.php";
 function GetData($table, $id = null)
 {
-    require_once __DIR__ . "/../helper/connection.php";
+    global $conn;
     if ($id != null) {
         $sql = "SELECT * FROM `$table` WHERE `$table`.`id` = $id";
         $result = $conn->query($sql);
@@ -26,7 +27,7 @@ function GetData($table, $id = null)
 }
 function InsertData($table, $d)
 {
-    require_once __DIR__ . "/../helper/connection.php";
+    global $conn;
 
     $columArr = [];
     $dataArr = [];
@@ -40,7 +41,7 @@ function InsertData($table, $d)
     $data = implode(", ", $dataArr);
     // return $d;
     $sql = "INSERT INTO $table ($colum) VALUES ($data)";
-
+    // var_dump($sql);
     if ($conn->query($sql) === TRUE) {
         $lastId = $conn->insert_id;
         return $conn->query("SELECT * FROM `$table` WHERE `$table`.`id` = $lastId")->fetch_assoc();
@@ -53,8 +54,8 @@ function InsertData($table, $d)
 
 function UpdateData($table, $updataData)
 {
-    $id= $updataData['id'];
-    require_once __DIR__ . "/../helper/connection.php";
+    $id = $updataData['id'];
+    global $conn;
     $arr = [];
 
     foreach ($updataData as $i => $i_value) {
@@ -78,7 +79,7 @@ function UpdateData($table, $updataData)
 function DeleteData($table, $data)
 {
     $ids = $data['ids'];
-    require_once __DIR__ . "/../helper/connection.php";
+    global $conn;
     $sql = "DELETE FROM `$table` WHERE `$table`.`id` in ($ids)";
     if ($conn->query($sql) === TRUE) {
         return true;
