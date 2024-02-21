@@ -1,12 +1,12 @@
 import { Button, Drawer, Form, Input, Space, Table, Tag } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { useApi } from '../hooks/api';
-import { API_ROUTES } from '../routes';
+import { useApi } from '../../hooks/api';
+import { API_ROUTES } from '../../routes';
 import { useForm } from 'antd/es/form/Form';
 import axios from 'axios';
-import { useComponentState, useMyList } from '../providers/context';
-import { makeFresh } from '../utils/function';
-import MyInput from '../components/input';
+import { useComponentState, useMyList } from '../../providers/context';
+import { makeFresh } from '../../utils/function';
+import MyInput from '../../components/input';
 
 function CategoryPage(props) {
 

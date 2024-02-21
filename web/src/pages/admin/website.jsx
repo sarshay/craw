@@ -1,12 +1,14 @@
 import { Button, Drawer, Form, Input, Space, Table, Tag } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { useApi } from '../hooks/api';
-import { API_ROUTES } from '../routes';
+import { useApi } from '../../hooks/api';
+import { API_ROUTES } from '../../routes';
 import { useForm } from 'antd/es/form/Form';
 import axios from 'axios';
-import { useComponentState, useMyList } from '../providers/context';
-import { makeFresh } from '../utils/function';
-import MyInput from '../components/input';
+import { useComponentState, useMyList } from '../../providers/context';
+import { makeFresh } from '../../utils/function';
+import MyInput from '../../components/input';
+import Search from 'antd/es/input/Search';
+import wpScan from '../../utils/wpScan';
 
 function WebsitePage(props) {
     const { website: websites, setWebsite: setData } = useMyList()
@@ -47,7 +49,7 @@ function WebsitePage(props) {
             {props.label}
             <Table
                 title={() => <Space>
-                    <Button type="primary" onClick={() => setSelected({status:'active'})}>
+                    <Button type="primary" onClick={() => setSelected({ status: 'active' })}>
                         New</Button>
                 </Space>}
                 columns={columns}
@@ -70,7 +72,7 @@ function WebsitePage(props) {
 export default WebsitePage;
 
 export const WPForm = ({ selected, setSelected = () => { }, websites = [], setData = () => { } }) => {
-    const fields = [['name', 'description', 'url'], ['site_icon_url', 'color_hue', 'keywords', 'status', 'categoryIds']]
+    const fields = [['url', 'name', 'description'], ['site_icon_url', 'color_hue', 'keywords', 'status', 'categoryIds']]
     const [submitLoading, setSubmitLoading] = useState(false);
 
     const { messageAPi } = useComponentState();
@@ -108,6 +110,23 @@ export const WPForm = ({ selected, setSelected = () => { }, websites = [], setDa
             });
     };
 
+    const [wpUrl, setWpUrl] = useState(null)
+    const [loading, setLoading] = useState(false)
+    const wp = wpScan({ wpUrl });
+
+    useEffect(() => {
+        if (wpUrl) {
+            setLoading(true)
+            wp.getInfo().then((data) => {
+                messageAPi.success("auto loaded")
+                form.setFieldsValue(data)
+            }).catch((error) => {
+                messageAPi.error(error.message)
+            }).finally(() => {
+                setLoading(false)
+            })
+        }
+    }, [wpUrl])
     return (<Drawer
         open={!!selected}
         onClose={() => setSelected(null)}
@@ -125,16 +144,30 @@ export const WPForm = ({ selected, setSelected = () => { }, websites = [], setDa
             onFinishFailed={(v) => console.error(v)}
             autoComplete="off"
         >
+
             {
                 fields[0].map((f) => (
-                    <Form.Item
-                        key={f}
-                        label={f}
-                        name={f}
-                        rules={[{ required: true, message: `Please input ${f}` }]}
-                    >
-                        <Input placeholder={f} />
-                    </Form.Item>
+                    f == 'url' ?
+                        <Form.Item
+                            key={f}
+                            label={f}
+                            name={f}
+                            rules={[{ required: true, message: `Please input ${f}` }]}
+                        >
+                            <Search placeholder={f}
+                                loading={loading}
+                                onBlur={e => setWpUrl(e.target.value)}
+                                onSearch={e => setWpUrl(e)}
+                            />
+                        </Form.Item> :
+                        <Form.Item
+                            key={f}
+                            label={f}
+                            name={f}
+                            rules={[{ required: true, message: `Please input ${f}` }]}
+                        >
+                            <Input placeholder={f} />
+                        </Form.Item>
                 ))
             }
             {

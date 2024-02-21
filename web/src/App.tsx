@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import SignIn from "./pages/signin";
-import { APP_ROUTES } from "./routes";
+import MyRouter from "./routes";
 import { BrowserRouter, HashRouter, Route, Routes } from "react-router-dom";
 
 import { CookiesProvider, useCookies } from "react-cookie";
@@ -11,22 +11,6 @@ import {
   MyProvider,
   ThemeProvider,
 } from "./providers/context";
-import Office from "./pages/office";
-import { useUser } from "./hooks/auth/user";
-
-function MyOffice() {
-  const { user, authenticated } = useUser();
-
-  if (!user || !authenticated) {
-    return <>checking user</>;
-  } else {
-    return (
-      <MyProvider user={user}>
-        <Office />
-      </MyProvider>
-    );
-  }
-}
 
 function App() {
   const { useToken } = theme;
@@ -41,14 +25,7 @@ function App() {
       <ThemeProvider>
         <Ant>
           <ComponentStateProvider>
-            {/* <CssBaseline /> */}
-            <HashRouter>
-              <Routes>
-                <Route path="/*" element={<MyOffice />} />
-                <Route path={APP_ROUTES.SIGN_IN} element={<SignIn />} />
-                {/* <Route path={"/tast"} element={<Tast />} /> */}
-              </Routes>
-            </HashRouter>
+            <MyRouter />
           </ComponentStateProvider>
         </Ant>
       </ThemeProvider>

@@ -2,12 +2,12 @@ import { Button, Card, Col, Divider, Image, Input, List, Row, Spin } from 'antd'
 import Search from 'antd/es/input/Search';
 import React, { useEffect, useState } from 'react';
 import { Route, Routes, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { APP_ROUTES } from '../routes';
-import { useApi } from '../hooks/api';
+import { APP_ROUTES } from '../../routes';
+import { useApi } from '../../hooks/api';
 import { WPForm } from './website';
-import { useComponentState, useMyList } from '../providers/context';
-import { makeFresh } from '../utils/function';
-import wpScan from '../utils/wpScan';
+import { useComponentState, useMyList } from '../../providers/context';
+import { makeFresh } from '../../utils/function';
+import wpScan from '../../utils/wpScan';
 import { Meta } from 'antd/es/list/Item';
 
 function ConsolePage(props) {
@@ -55,6 +55,7 @@ export function WpScanPage({ wpUrl }) {
         const fetchData = () => {
             setLoading(true)
             setWpInfo(null)
+            setWpError(null)
             wp.getInfo().then((data) => {
                 setWpInfo(data);
                 messageAPi.success(`${data.url} - ${data.name} is loaded.`);

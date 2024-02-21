@@ -35,7 +35,31 @@ function wpScan({ wpUrl }) {
         }
       });
   };
-  const getPost = () => {};
+  const getPost = async (param) => {
+    const infoKeyList = [
+      "id",
+      "title",
+      "date",
+      "_links",
+      "excerpt",
+      "categories",
+    ];
+    return await axios
+      .get(`${baseUrl}wp/v2/posts`, {
+        params: {
+          page: 1,
+          _fields: `${infoKeyList.join(",")}`,
+          _embed: "wp:featuredmedia",
+          ...param,
+        },
+      })
+      .then(function (response) {
+        return response.data;
+      })
+      .catch(function (error) {
+        throw new Error("Error fetching Posts");
+      });
+  };
   const getPostDetail = () => {};
   return { getCategory, getInfo, getPost, getPostDetail };
 }
