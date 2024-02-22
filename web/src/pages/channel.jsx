@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { useComponentState, useMyList } from '../providers/context';
-import { Col, List, Menu, Row, Spin, Tabs, Typography } from 'antd';
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { useLayout, useMyList, useTheme } from '../providers/context';
+import { Avatar, Col, Drawer, List, Menu, Row, Space, Spin, Tabs, Typography } from 'antd';
+import { Link, Outlet, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { APP_ROUTES } from '../routes';
 import Search from 'antd/es/input/Search';
 import wpScan from '../utils/wpScan';
 import InfiniteScroll from '../components/infiniteScroll';
 import { TheHtml } from '../utils/html';
 import { PostThumbnail } from '../components/post';
+import { ArrowLeftOutlined } from '@ant-design/icons';
+import { useScrollDirection } from '../utils/function';
 
 function ChannelPage(props) {
     const { website } = useMyList()
-    let { channelId } = useParams();
+    let { channelId, postId } = useParams();
     const theWp = website.find(w => w.id == channelId);
     const [searchParams, setSearchParams] = useSearchParams();
     const categoryId = searchParams.get("c")
@@ -29,7 +31,7 @@ function ChannelPage(props) {
     // let _category = query.get("categories") ? `&categories=${query.get("categories")}` : ``;
     const wp = wpScan({ wpUrl: theWp?.url });
 
-    const { messageAPi } = useComponentState();
+    const { messageAPi } = useLayout();
     useEffect(() => {
         setCategory([]);
         if (theWp) {
@@ -79,33 +81,57 @@ function ChannelPage(props) {
     useEffect(() => {
         fetchPost()
     }, [page, theWp, categoryId])
+    const type = 'poster';
+
+    const navigate = useNavigate();
+    const { setHue } = useTheme()
+    useEffect(() => {
+        setHue(theWp.color_hue)
+    }, [theWp])
+    const { direction } = useScrollDirection()
     return (
         <div key={channelId}>
-            {categoryLoading ? <Spin /> : <Menu
-                selectedKeys={[categoryId]} mode="horizontal" items={category.map(c => {
-                    return {
-                        label: <Link to={`${APP_ROUTES.CHANNEL_ID(channelId)}?c=${c.id}`}>{c.name} [${c.count}]</Link>,
-                        key: c.id,
-                    }
-                })} />}
-            <Row gutter={[16, 16]}>
+            <Drawer
+                width={'100%'}
+                closeIcon={<ArrowLeftOutlined />}
+                onClose={() => navigate(APP_ROUTES.CHANNEL_ID(channelId))}
+                closable={false}
+                open={!!postId}>
+                <Outlet />
+            </Drawer>
+            <div className={`${direction == 'down' ? "-translate-y-16" : ""} bg-white transition duration-150 ease-out px-4 sticky top-0`}>
+                <Space >
+                    <ArrowLeftOutlined onClick={() => navigate(APP_ROUTES.HOME)} />
+                    <Avatar src={<img src={theWp.site_icon_url} />} />
+                    {theWp.name}
+                </Space>
+            </div>
+            <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4'>
                 {
                     (posts || []).map((w) => (
-                        <Col span={8} key={w.id}>
-                            <PostThumbnail data={w} />
-                        </Col>
+                        <Link key={w.id} to={APP_ROUTES.POST_DETAIL(channelId, w.id)} style={{ display: "block", width: '100%' }}>
+                            <PostThumbnail data={w} type={type} />
+                        </Link>
                     ))
                 }
-            </Row>
+            </div>
 
             <InfiniteScroll
                 loadMore={loadMore}
                 loading={loading}
                 hasMore={hasMore}
             />
-            {loading && <Spin />}
             <div style={{ position: 'sticky', bottom: 0 }}>
                 <center>{message}</center>
+            </div>
+            <div className={`${direction == 'down' ? "translate-y-16" : ""} transition duration-150 ease-out sticky bottom-0`}>
+                {categoryLoading ? <Spin /> : <Menu
+                    selectedKeys={[categoryId]} mode="horizontal" items={category.map(c => {
+                        return {
+                            label: <Link to={`${APP_ROUTES.CHANNEL_ID(channelId)}?c=${c.id}`}>{c.name} [${c.count}]</Link>,
+                            key: c.id,
+                        }
+                    })} />}
             </div>
         </div>
     );

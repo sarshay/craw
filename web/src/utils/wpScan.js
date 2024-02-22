@@ -60,7 +60,31 @@ function wpScan({ wpUrl }) {
         throw new Error("Error fetching Posts");
       });
   };
-  const getPostDetail = () => {};
+  const getPostDetail = async (id) => {
+    const infoKeyList = [
+      "id",
+      "title",
+      "date",
+      "_links",
+      "excerpt",
+      "categories",
+      "content",
+    ];
+    return await axios
+      .get(`${baseUrl}wp/v2/posts/${id}`, {
+        params: {
+          page: 1,
+          _fields: `${infoKeyList.join(",")}`,
+          _embed: "wp:featuredmedia"
+        },
+      })
+      .then(function (response) {
+        return response.data;
+      })
+      .catch(function (error) {
+        throw new Error("Error fetching Posts");
+      });
+  };
   return { getCategory, getInfo, getPost, getPostDetail };
 }
 

@@ -1,17 +1,17 @@
 import React, { useState } from "react";
-import { Button, Checkbox, Form, Input } from "antd";
+import { Button, Checkbox, Form, Input, message } from "antd";
 import { API_ROUTES, APP_ROUTES } from "../routes";
 import axios from "axios";
 // import { storeTokenInLocalStorage } from "../hooks/auth/auth";
 import { NavigateProps, useNavigate } from "react-router-dom";
-import { useComponentState } from "../providers/context";
+import { useLayout } from "../providers/context";
 import { useCookies } from "react-cookie";
 
 const SignInPage = (formData) => {
 
   const [cookies, setCookie] = useCookies(["user_token"]);
   const [loading, setLoading] = useState(false);
-  const { messageAPi } = useComponentState();
+  const [messageAPi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
   const signIn = (values) => {
     setLoading(true);
@@ -55,6 +55,7 @@ const SignInPage = (formData) => {
       onFinishFailed={onFinishFailed}
       autoComplete="off"
     >
+      {contextHolder}
       <Form.Item
         label="Username"
         name="username"

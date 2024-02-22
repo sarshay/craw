@@ -1,14 +1,15 @@
-import { Button, Drawer, Form, Input, Space, Table, Tag } from 'antd';
+import { Button, Drawer, Flex, Form, Input, Space, Table, Tag } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useApi } from '../../hooks/api';
 import { API_ROUTES } from '../../routes';
 import { useForm } from 'antd/es/form/Form';
 import axios from 'axios';
-import { useComponentState, useMyList } from '../../providers/context';
+import { useMyList } from '../../providers/context';
 import { makeFresh } from '../../utils/function';
 import MyInput from '../../components/input';
 import Search from 'antd/es/input/Search';
 import wpScan from '../../utils/wpScan';
+import { useAdminLayout } from './layout.office';
 
 function WebsitePage(props) {
     const { website: websites, setWebsite: setData } = useMyList()
@@ -75,7 +76,7 @@ export const WPForm = ({ selected, setSelected = () => { }, websites = [], setDa
     const fields = [['url', 'name', 'description'], ['site_icon_url', 'color_hue', 'keywords', 'status', 'categoryIds']]
     const [submitLoading, setSubmitLoading] = useState(false);
 
-    const { messageAPi } = useComponentState();
+    const { messageAPi } = useAdminLayout();
 
     const [form] = useForm();
     // console.log(form)
@@ -130,8 +131,8 @@ export const WPForm = ({ selected, setSelected = () => { }, websites = [], setDa
     return (<Drawer
         open={!!selected}
         onClose={() => setSelected(null)}
-        extra={<Button type="primary" htmlType="submit" loading={submitLoading} onClick={form.submit}>
-            {selected?.id ? "Update" : "Create"}</Button>}
+        extra={<Flex gap={6}><Button danger >Delete</Button>, <Button type="primary" htmlType="submit" loading={submitLoading} onClick={form.submit}>
+            {selected?.id ? "Update" : "Create"}</Button></Flex>}
     >
         <Form
             form={form}

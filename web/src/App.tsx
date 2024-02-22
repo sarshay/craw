@@ -1,16 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import SignIn from "./pages/signin";
 import MyRouter from "./routes";
-import { BrowserRouter, HashRouter, Route, Routes } from "react-router-dom";
-
+import "./index.css";
 import { CookiesProvider, useCookies } from "react-cookie";
 // import Tast from "./pages/tast";
 import { theme, App as Ant } from "antd";
-import {
-  ComponentStateProvider,
-  MyProvider,
-  ThemeProvider,
-} from "./providers/context";
+import { ThemeProvider } from "./providers/context";
 
 function App() {
   const { useToken } = theme;
@@ -24,9 +19,7 @@ function App() {
     <CookiesProvider>
       <ThemeProvider>
         <Ant>
-          <ComponentStateProvider>
-            <MyRouter />
-          </ComponentStateProvider>
+          <MyRouter />
         </Ant>
       </ThemeProvider>
     </CookiesProvider>

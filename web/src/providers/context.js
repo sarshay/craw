@@ -1,4 +1,4 @@
-// MyContext.js
+// RepoContext.js
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useApi } from "../hooks/api";
 import { API_ROUTES, APP_API_URL, APP_WS_URL } from "../routes";
@@ -11,14 +11,16 @@ import {
   notification,
   message,
   Spin,
+  Layout,
 } from "antd";
 // import connectSocket from "../socket";
 import { getTokenFromLocalStorage } from "../hooks/auth/auth";
 import { makeFresh } from "../utils/function";
+import { Header } from "antd/es/layout/layout";
 
-const MyContext = createContext();
+const RepoContext = createContext();
 
-export const MyProvider = ({ children, user }) => {
+export const RepoProvider = ({ children, user }) => {
   const {
     loading: category_loading,
     error: category_err,
@@ -45,7 +47,7 @@ export const MyProvider = ({ children, user }) => {
     );
   } else {
     return (
-      <MyContext.Provider
+      <RepoContext.Provider
         value={{
           category,
           category_loading,
@@ -56,64 +58,41 @@ export const MyProvider = ({ children, user }) => {
         }}
       >
         {children}
-      </MyContext.Provider>
+      </RepoContext.Provider>
     );
   }
 };
 
-export const useMyList = () => useContext(MyContext);
+export const useMyList = () => useContext(RepoContext);
 
-const UsefulComponentContext = createContext(); // Rename the context variable
+const LayoutContext = createContext(); // Rename the context variable
 
-export const ComponentStateProvider = ({ children }) => {
-  const [theDrawer, setTheDrawer] = useState(null);
-  const [popUp, setPopUp] = useState(false);
-  const [popUpCloseable, setPopUpCloseable] = useState(true);
+export const LayoutProvider = ({ children }) => {
   const [messageAPi, contextHolder] = message.useMessage();
-  const [noti, contexHolder] = notification.useNotification();
-
-  const [movileNavHeight, setMovileNavHeight] = useState("0px");
+  const [header, setHeader] = useState(null);
+  const [header2, setHeader2] = useState(null);
 
   const contextValue = {
-    popUp,
-    setPopUp,
-    setPopUpCloseable,
-    movileNavHeight,
-    theDrawer,
-    setTheDrawer,
-    noti,
     messageAPi,
+    header,
+    setHeader,
+    header2,
+    setHeader2,
   };
 
   return (
-    <UsefulComponentContext.Provider value={contextValue}>
-      {contexHolder}
-      {contextHolder}
-      {children}
-      {popUp && (
-        <div
-          style={{
-            backdropFilter: "blur(1rem)",
-            position: "fixed",
-            top: 0,
-            right: 0,
-            left: 0,
-            bottom: 0,
-            zIndex: 10,
-          }}
-        >
-          <div
-            style={{ position: "absolute", width: "100%", height: "100%" }}
-            onClick={() => setPopUp(false)}
-          />
-          <center>{popUp}</center>
-        </div>
-      )}
-    </UsefulComponentContext.Provider>
+    <LayoutContext.Provider value={contextValue}>
+      <Layout style={{ minHeight: "100vh" }}>
+        {header}
+        {header2}
+        {contextHolder}
+        {children}
+      </Layout>
+    </LayoutContext.Provider>
   );
 };
 
-export const useComponentState = () => useContext(UsefulComponentContext);
+export const useLayout = () => useContext(LayoutContext);
 
 const ThemeContext = createContext(); // Rename the context variable
 export const ThemeProvider = ({ children }) => {
@@ -122,7 +101,7 @@ export const ThemeProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem("themeMode", themeMode);
   }, [themeMode]);
-  const hue = 300;
+  const [hue, setHue] = useState(200);
   // const hue = 180;
   // const hue = 210;
   // const hue = 235;
@@ -155,7 +134,7 @@ export const ThemeProvider = ({ children }) => {
     ],
   };
   return (
-    <ThemeContext.Provider value={{ setThemeMode, themeMode }}>
+    <ThemeContext.Provider value={{ setThemeMode, themeMode, setHue, hue }}>
       {/* <Slider defaultValue={hue} onChange={(v)=>setHue(v)} max={360}/> */}
       <ConfigProvider theme={antTheme}>{children}</ConfigProvider>
     </ThemeContext.Provider>

@@ -5,10 +5,11 @@ import { Route, Routes, useNavigate, useParams, useSearchParams } from 'react-ro
 import { APP_ROUTES } from '../../routes';
 import { useApi } from '../../hooks/api';
 import { WPForm } from './website';
-import { useComponentState, useMyList } from '../../providers/context';
+import { useLayout, useMyList } from '../../providers/context';
 import { makeFresh } from '../../utils/function';
 import wpScan from '../../utils/wpScan';
 import { Meta } from 'antd/es/list/Item';
+import { useAdminLayout } from './layout.office';
 
 function ConsolePage(props) {
 
@@ -31,7 +32,7 @@ function ConsolePage(props) {
 export default ConsolePage;
 export function WpScanPage({ wpUrl }) {
 
-    const { messageAPi } = useComponentState();
+    const { messageAPi } = useAdminLayout();
     const { website, setWebsite } = useMyList()
     const infoKeyList = [
         "site_icon_url",
