@@ -24,7 +24,7 @@ function WebsitePage(props) {
             title: 'Icon',
             dataIndex: 'site_icon_url',
             key: 'site_icon_url',
-            render: (value) => <img src={value} height={48} style={{ margin: "-16px 0px -18px 0px" }} />
+            render: (value) => <img src={value} className="h-16" style={{ margin: "-16px 0px -18px 0px" }} />
         },
         {
             title: 'Name',

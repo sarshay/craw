@@ -8,16 +8,20 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
+.ant-btn-primary {
+  @apply bg-blue-500;
+}
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 .bg-warn {
   background-color: #ff000011;
 }
-
-.read{
-  img{
+.noPaddingDrawer .ant-drawer-body {
+  padding: 0;
+}
+.read {
+  img {
     max-width: 100%;
     height: auto;
     object-fit: contain;

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useLayout, useMyList, useTheme } from '../providers/context';
-import { Avatar, Col, Drawer, List, Menu, Row, Space, Spin, Tabs, Typography } from 'antd';
+import { Avatar, Col, Drawer, Flex, List, Menu, Row, Space, Spin, Tabs, Typography } from 'antd';
 import { Link, Outlet, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { APP_ROUTES } from '../routes';
 import Search from 'antd/es/input/Search';
@@ -8,7 +8,7 @@ import wpScan from '../utils/wpScan';
 import InfiniteScroll from '../components/infiniteScroll';
 import { TheHtml } from '../utils/html';
 import { PostThumbnail } from '../components/post';
-import { ArrowLeftOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, SearchOutlined } from '@ant-design/icons';
 import { useScrollDirection } from '../utils/function';
 
 function ChannelPage(props) {
@@ -89,6 +89,12 @@ function ChannelPage(props) {
         setHue(theWp.color_hue)
     }, [theWp])
     const { direction } = useScrollDirection()
+    const [searchOpen, setSearchOpen] = useState(false)
+    const inputRef = useRef(null);
+
+    useEffect(() => {
+        if (searchOpen) { inputRef.current.focus()}
+    }, [searchOpen]);
     return (
         <div key={channelId}>
             <Drawer
@@ -96,15 +102,25 @@ function ChannelPage(props) {
                 closeIcon={<ArrowLeftOutlined />}
                 onClose={() => navigate(APP_ROUTES.CHANNEL_ID(channelId))}
                 closable={false}
-                open={!!postId}>
+                open={!!postId}
+                className='noPaddingDrawer'>
                 <Outlet />
             </Drawer>
-            <div className={`${direction == 'down' ? "-translate-y-16" : ""} bg-white transition duration-150 ease-out px-4 sticky top-0`}>
-                <Space >
-                    <ArrowLeftOutlined onClick={() => navigate(APP_ROUTES.HOME)} />
-                    <Avatar src={<img src={theWp.site_icon_url} />} />
-                    {theWp.name}
-                </Space>
+            <div className={`${direction == 'down' ? "-translate-y-16" : ""} bg-white transition duration-150 ease-out px-4 py-2 sticky top-0`}>
+                <Flex justify='space-between' align='center' gap={16}>
+                    <Flex align='center' gap={16} className='flex-1'>
+                        <ArrowLeftOutlined onClick={() => navigate(APP_ROUTES.HOME)} />
+                        {
+                            theWp.site_icon_url ? (
+                                <Avatar src={<img src={theWp.site_icon_url} sizes={14} />} />
+                            ) : (
+                                <Avatar sizes={14}>{theWp.name[0]}</Avatar>
+                            )
+                        }
+                        {searchOpen ? <Search ref={inputRef} onBlur={() => { setSearchOpen(false) }} width={'100%'} /> : theWp.name}
+                    </Flex>
+                    {!searchOpen && <SearchOutlined onClick={() => { setSearchOpen(true) }} />}
+                </Flex>
             </div>
             <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4'>
                 {
@@ -125,7 +141,7 @@ function ChannelPage(props) {
                 <center>{message}</center>
             </div>
             <div className={`${direction == 'down' ? "translate-y-16" : ""} transition duration-150 ease-out sticky bottom-0`}>
-                {categoryLoading ? <Spin /> : <Menu
+                {category && <Menu
                     selectedKeys={[categoryId]} mode="horizontal" items={category.map(c => {
                         return {
                             label: <Link to={`${APP_ROUTES.CHANNEL_ID(channelId)}?c=${c.id}`}>{c.name} [${c.count}]</Link>,
