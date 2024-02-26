@@ -24,12 +24,17 @@ import { TheHtml } from "../utils/html";
 import { MyShare } from "../components/utli";
 import { ago } from "../utils/time";
 import { useScrollDirection } from "../utils/function";
+import { useCookies } from "react-cookie";
+import Is18PlusCover from "../components/18PlusCover";
 
 function PostPage(props) {
+  const [cookies, setCookie] = useCookies(["isUser18Plus"]);
+
   const { website } = useMyList();
   let { channelId, postId } = useParams();
   const { messageAPi } = useLayout();
   const theWp = website.find((w) => w.id == channelId);
+  const isUser18Plus = cookies?.isUser18Plus == "yes";
 
   const [loading, setLoading] = useState(false);
   const [postData, setPostData] = useState(false);
@@ -59,10 +64,18 @@ function PostPage(props) {
           setLoading(false);
         });
     };
-    if (postId) {
-      fetchData();
+    if (theWp.is18Plus == "yes") {
+      if (isUser18Plus) {
+        if (postId) {
+          fetchData();
+        }
+      }
+    } else {
+      if (postId) {
+        fetchData();
+      }
     }
-  }, [postId, theWp]);
+  }, [postId, theWp, isUser18Plus]);
   const p = postData;
   var img =
     p._embedded && p._embedded["wp:featuredmedia"]
@@ -98,6 +111,7 @@ function PostPage(props) {
 
   return (
     <div className="px-4">
+      <Is18PlusCover is18Plus={theWp.is18Plus && theWp.is18Plus == "yes"} />
       <Flex justify={"space-between"} align={"center"} className="sticky top-0">
         <Space align="center" className="py-2">
           <ArrowLeftOutlined

@@ -10,6 +10,7 @@ import { TheHtml } from '../utils/html';
 import { PostThumbnail } from '../components/post';
 import { ArrowLeftOutlined, SearchOutlined } from '@ant-design/icons';
 import { useScrollDirection } from '../utils/function';
+import Is18PlusCover from '../components/18PlusCover';
 
 function ChannelPage(props) {
     const { website } = useMyList()
@@ -114,6 +115,7 @@ function ChannelPage(props) {
     };
     return (
         <div key={channelId}>
+            <Is18PlusCover is18Plus={theWp.is18Plus == 'yes'}/>
             <Drawer
                 width={'100%'}
                 closeIcon={<ArrowLeftOutlined />}
