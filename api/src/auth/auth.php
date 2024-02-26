@@ -23,7 +23,7 @@ function theUser()
       return $user;
     }
   } else {
-    httpStatus(401);
+    return null;
   }
 }
 
@@ -32,7 +32,7 @@ function validateToken($token)
   if ($token == token()) {
     $user = [
       'id' => 1,
-      'username' => 'Hein Soe',
+      'name' => 'Hein Soe',
       'role' => 'admin',
       'token' => $token
     ];

@@ -122,7 +122,7 @@ function CategoryPage(props) {
                 columns={columns}
                 onRow={(record, rowIndex) => {
                     return {
-                        onClick: () => setSelected(category?.[rowIndex]), // click row
+                        onClick: () => setSelected(record), // click row
                         // onDoubleClick: (event) => { }, // double click row
                         // onContextMenu: (event) => { }, // right button click row
                         // onMouseEnter: (event) => { }, // mouse enter row

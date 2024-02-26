@@ -111,7 +111,7 @@ export const ThemeProvider = ({ children }) => {
     token: {
       colorPrimary: `hsl(${hue}, ${isDark ? "50%,60%" : "80%,40%"})`,
       // // borderRadius: borderRadius,
-      fontFamily: "pyidaungsu",
+      fontFamily: "Arial",
       colorText: `hsl(${hue}, ${isDark ? "10%,85%" : "0%,0%"})`,
       colorPrimaryBg: `hsl(${hue}, ${isDark ? "35%,15%" : "70%,95%"})`,
       secondColor: `hsl(${hue + different}, ${isDark ? "50%,75%" : "50%,20%"})`,

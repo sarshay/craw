@@ -37,7 +37,7 @@ switch ($method) {
             $body = makeUp($_PUT, $schema[$method], true);
             $res = UpdateData($table, $body);
             if ($res) {
-                jsonResponse(202, makeUp($res, $cols));
+                jsonResponse(202, makeUp(GetData($table, $body['id']), $cols));
             } else {
                 httpStatus(204);
             }

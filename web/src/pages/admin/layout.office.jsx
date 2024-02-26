@@ -30,35 +30,38 @@ const OfficeLayout = () => {
   return (
     <RepoProvider user={user}>
       <LayoutProvider>
-        <Layout style={{ minHeight: "100vh" }}>
+        <Layout>
           <Sider
             collapsible
             collapsed={collapsed}
             onCollapse={(value) => setCollapsed(value)}
           >
-            <div className="demo-logo-vertical" />
-            <Menu
-              theme="dark"
-              defaultSelectedKeys={adminPagesList?.[0]?.key}
-              mode="inline"
-              onSelect={e => setPage(adminPagesList.find(x => x.key == e.key))}
-              items={adminPagesList.filter(p => !p.hide)}
-            />
+
+            <div className="sticky top-0">
+              <div className="demo-logo-vertical" />
+              <Menu
+                theme="dark"
+                defaultSelectedKeys={adminPagesList?.[0]?.key}
+                mode="inline"
+                onSelect={e => setPage(adminPagesList.find(x => x.key == e.key))}
+                items={adminPagesList.filter(p => !p.hide)}
+              />
+            </div>
           </Sider>
           <Layout>
-            <Header style={{ padding: "0px 16px", background: colorBgContainer }}>
+            {/* <Header style={{ padding: "0px 16px", background: colorBgContainer }}>
               Header
-            </Header>
-            <Content style={{ margin: "0 16px" }}>
-              <Breadcrumb style={{ margin: "16px 0" }}>
+            </Header> */}
+            <Content className="min-h-screen px-16">
+              {/* <Breadcrumb style={{ margin: "16px 0" }}>
                 <Breadcrumb.Item>User</Breadcrumb.Item>
                 <Breadcrumb.Item>Bill</Breadcrumb.Item>
-              </Breadcrumb>
+              </Breadcrumb> */}
               <Outlet />
             </Content>
-            <Footer style={{ textAlign: "center" }}>
+            {/* <Footer style={{ textAlign: "center" }}>
               WP hub ©{new Date().getFullYear()} Created by heinsoe.com
-            </Footer>
+            </Footer> */}
           </Layout>
         </Layout>
       </LayoutProvider>

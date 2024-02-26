@@ -4,7 +4,9 @@ header('Content-Type: application/json');
 // Allow requests from specific origins
 $allowedOrigins = array(
     'http://localhost:3000', // Replace with the origin of your React app
-    'https://example.com' // Add HTTPS version if applicable
+    'https://local.heinsoe.com', // Replace with the origin of your React app
+    'http://192.168.110.244:3000', // Add HTTPS version if applicable
+    'http://192.168.99.2:3000' // Add HTTPS version if applicable
 );
 
 // Check if the request origin is allowed

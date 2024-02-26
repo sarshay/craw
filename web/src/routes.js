@@ -24,7 +24,7 @@ import PostPage from "./pages/post";
 var development = true;
 export const BASE_URL = development
   ? "http://localhost"
-  : "https://api.himyanmar.com";
+  : "https://api.himyanmar.online";
 export const APP_API_URL = `${BASE_URL}`;
 export const APP_WS_URL = BASE_URL;
 export const API_ROUTES = {
@@ -33,6 +33,7 @@ export const API_ROUTES = {
   ME: `${APP_API_URL}/auth/me`,
   WEBSITE: `${APP_API_URL}/website`,
   CATEGORY: `${APP_API_URL}/category`,
+  ERROR_REPORT: `${APP_API_URL}/error`,
 };
 const admin_route = "/admin";
 export const APP_ROUTES = {
@@ -44,6 +45,7 @@ export const APP_ROUTES = {
   CONSOLE: `${admin_route}/console`,
   SCAN_WP: (url) => `${admin_route}/console/?wpUrl=${url}`,
   CHANNEL_ID: (id) => `/${id}`,
+  SEARCH_IN_CHANNEL :(channelId, word)=> `/${channelId}/?search=${word}`,
   POST_DETAIL: (channelId, id) => `/${channelId}/${id}`,
 };
 

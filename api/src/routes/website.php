@@ -1,21 +1,30 @@
 <?php
 require_once __DIR__ . '/../auth/auth.php';
 require_once __DIR__ . '/../models/model.php';
+require_once __DIR__ . '/../models/website.php';
+require_once __DIR__ . '/../models/categoryMap.php';
 
 $table = 'website';
 $id = isset($param[1]) ? $param[1] : null;
 
-$cols = [[], ["id", 'name', 'description', 'url', 'site_icon_url', 'color_hue', 'keywords', 'updated_time', 'created_time', 'status']];
+$cols = [[], ["id", 'name', 'description', 'url', 'site_icon_url', 'color_hue', 'keywords', 'api_base_path', 'updated_time', 'created_time', 'status', 'last_scan_time', 'error_code', 'scan_by', 'category_ids', 'is18Plus']];
 $schema = [
-    "GET" => [[], ["id", 'name', 'description', 'url', 'keywords']],
-    "POST" => [['name', 'description', 'url'], ['site_icon_url', 'color_hue', 'keywords']],
-    "PUT" => [["id"], ['name', 'description', 'url', 'site_icon_url', 'color_hue', 'keywords', 'status']],
+    "GET" => [[], ["id", 'keywords', 'status']],
+    "POST" => [['name', 'description', 'url'], ['site_icon_url', 'color_hue', 'keywords', 'api_base_path', 'category_ids', 'is18Plus']],
+    "PUT" => [["id"], ['name', 'description', 'url', 'site_icon_url', 'color_hue', 'keywords', 'api_base_path', 'status', 'error_code', 'is18Plus']],
     "DELETE" => [["ids"], []],
 ];
 switch ($method) {
     case 'GET':
-        $res = GetData($table, $id);
+        $body['id'] = $id;
+        $body = makeUp($_POST, $schema[$method], true);
+        // logger('some one');
+        if (!theUser()) {
+            $body['status'] = isset($body["status"]) ? $body["status"] : 'active';
+        }
+        $res = GetWebsite($body);
         if ($res) {
+            // logger($res);
             jsonResponse(200, makeUp($res, $cols));
             // jsonResponse(200, $res);
         } else {
@@ -26,9 +35,6 @@ switch ($method) {
         if (theUser()) {
             $body = makeUp($_POST, $schema[$method], true);
             $res = InsertData($table, $body);
-            
-            // var_dump($res);
-            // var_dump($body);
             jsonResponse(201, makeUp($res, $cols));
         } else {
             httpStatus(403);
@@ -37,11 +43,23 @@ switch ($method) {
 
     case 'PUT':
         if (theUser()) {
-            // var_dump($_PUT);
+            $categories = isset($_PUT["category_ids"]) ? $_PUT["category_ids"] : null;
+
             $body = makeUp($_PUT, $schema[$method], true);
+            $body['error_code'] = isset($body["error_code"]) ? $body["error_code"] : null;
+            logger($body);
             $res = UpdateData($table, $body);
             if ($res) {
-                jsonResponse(202, makeUp($res, $cols));
+                if ($categories) {
+                    $isRemap = reMapCategoryWebsite($categories, $body['id']);
+                    if ($isRemap) {
+                        jsonResponse(202, makeUp(GetWebsite($body), $cols));
+                    } else {
+                        httpStatus(500);
+                    }
+                } else {
+                    jsonResponse(202, makeUp(GetWebsite($body), $cols));
+                }
             } else {
                 httpStatus(204);
             }

@@ -6,27 +6,19 @@ import { APP_ROUTES } from '../routes';
 import { ago } from '../utils/time';
 import { useTheme } from '../providers/context';
 
-export function PostThumbnail({ data, type }) {
-    return (
-        <PostThumbnailStyle data={data} type={type} />
-    );
-}
+export const findImage = (p, baseUrl) => {
 
-const PostThumbnailStyle = ({ type, data }) => {
+    var img = p?._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes?.medium?.source_url
+        || p?._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes?.medium_large?.source_url
+        || p?._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes?.full?.source_url;
+    return img && (img.startsWith('http') ? img : `${baseUrl}${img}`)
+
+}
+export function PostThumbnail({ data, wpInfo, type }) {
 
     const { hue } = useTheme()
     const p = data;
-    const img = p._embedded &&
-        p._embedded['wp:featuredmedia'] ?
-        p._embedded['wp:featuredmedia'][0].media_details && p._embedded['wp:featuredmedia'][0].media_details.sizes ?
-            p._embedded['wp:featuredmedia'][0].media_details.sizes.medium ? p._embedded['wp:featuredmedia'][0].media_details.sizes.medium.source_url
-                :
-                p._embedded['wp:featuredmedia'][0].media_details.sizes.medium_large ? p._embedded['wp:featuredmedia'][0].media_details.sizes.medium_large.source_url
-                    :
-                    p._embedded['wp:featuredmedia'][0].media_details.sizes.full ? p._embedded['wp:featuredmedia'][0].media_details.sizes.full.source_url
-                        : false
-            : false
-        : false
+    var img = findImage(p, wpInfo?.url)
     switch (type) {
         case "poster":
             return (
@@ -38,7 +30,7 @@ const PostThumbnailStyle = ({ type, data }) => {
                         {ago(p.date)}
 
                         <Typography.Paragraph ellipsis={{ rows: img ? 4 : 7 }} style={{ color: "#ffffff77" }} type='secondery'>
-                            <Typography.Title level={img ? 4 : 3} style={{ margin: 0, color: 'white' }}>{p.title.rendered}</Typography.Title>
+                            <Typography.Title level={img ? 4 : 3} style={{ margin: 0, color: 'white' }}>{TheHtml(p.title.rendered)}</Typography.Title>
                             {TheHtml(p.excerpt.rendered)}</Typography.Paragraph>
                     </div>
                 </div>)
@@ -50,7 +42,7 @@ const PostThumbnailStyle = ({ type, data }) => {
                     cover={img && <img alt="example" src={img} height={260} style={{ objectFit: 'cover' }} />}
                 >
                     {/* <Meta title={TheHtml(p.title.rendered)} description={<Typography.Text>{TheHtml(p.excerpt.rendered)}</Typography.Text>} /> */}
-                    <Typography.Title level={img ? 4 : 1} style={{ margin: 0 }}>{p.title.rendered}</Typography.Title>
+                    <Typography.Title level={img ? 4 : 1} style={{ margin: 0 }}>{TheHtml(p.title.rendered)}</Typography.Title>
                     {ago(p.date)}
                     <Typography.Paragraph ellipsis={{ rows: img ? 2 : 7 }} type='secondery'>{TheHtml(p.excerpt.rendered)}</Typography.Paragraph>
                 </Card>)

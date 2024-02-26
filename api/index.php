@@ -10,6 +10,8 @@ include_once __DIR__ . '/src/auth/auth.php';
 include_once __DIR__ . '/src/utility/oop.php';
 include_once __DIR__ . '/src/utility/method.php';
 
+// include_once __DIR__ . '/migrate.php';
+
 
 // Handle HTTP requests
 $paths =  parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);

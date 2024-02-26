@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . "/../helper/connection.php";
-function GetData($table, $id = null)
+function GetData($table, $id = null, $filter = null)
 {
     global $conn;
     if ($id != null) {
@@ -14,7 +14,19 @@ function GetData($table, $id = null)
             logger($conn->error);
         }
     } else {
-        $sql = "SELECT * FROM `$table` ORDER BY id DESC LIMIT 100 ";
+        $filter_ = [];
+        if ($filter) {
+            foreach ($filter as $i => $i_value) {
+                $val = is_array($i_value) ? json_encode($i_value) : $i_value;
+                $filter_[] = "`" . $i . "` = '" . $val  . "'";
+            }
+        }
+
+        // logger( $filter_);
+        $where = implode(" AND ", $filter_);
+        $whereString = count($filter_) > 0 ? "WHERE $where" : "";
+        $sql = "SELECT * FROM `$table` $whereString ORDER BY id DESC LIMIT 100 ";
+        // logger($sql);
         $result = $conn->query($sql);
         if ($result) {
             return $result->fetch_all(MYSQLI_ASSOC);
@@ -52,8 +64,44 @@ function InsertData($table, $d)
     $conn->close();
 };
 
+function InsertMultiData($table, $data)
+{
+    global $conn;
+
+    $columns = [];
+    $values = [];
+
+    foreach ($data as $row) {
+        $columnArr = [];
+        $valueArr = [];
+        foreach ($row as $column => $value) {
+            $columnArr[] = $column;
+            $valueArr[] = is_array($value) ? "'" . json_encode($value) . "'" : "'" . $value  . "'";
+        }
+        $columns[] = '(' . implode(", ", $columnArr) . ')';
+        $values[] = '(' . implode(", ", $valueArr) . ')';
+    }
+
+    $columnsString = implode(", ", array_unique($columns));
+    $valuesString = implode(", ", $values);
+
+    $sql = "INSERT INTO $table $columnsString VALUES $valuesString";
+
+    if ($conn->query($sql) === TRUE) {
+        // $lastId = $conn->insert_id;
+        return true;
+    } else {
+        logger($sql);
+        logger($conn->error);
+    }
+
+    $conn->close();
+    exit;
+}
+
 function UpdateData($table, $updataData)
 {
+    // var_dump($updataData);
     $id = $updataData['id'];
     global $conn;
     $arr = [];
@@ -66,11 +114,12 @@ function UpdateData($table, $updataData)
     $readyToSQL = implode(", ", $arr);
 
     $sql = "UPDATE `$table` SET  $readyToSQL WHERE `$table`.`id` = $id";
-    // echo $sql;
     if ($conn->query($sql) === TRUE) {
-        return $conn->query("SELECT * FROM `$table` WHERE `$table`.`id` = $id")->fetch_assoc();
+        return true;
     } else {
-        return $conn->error;
+        logger($sql);
+        logger($conn->error);
+        httpStatus(500);
     }
 
     $conn->close();
@@ -84,7 +133,8 @@ function DeleteData($table, $data)
     if ($conn->query($sql) === TRUE) {
         return true;
     } else {
-        return $conn->error;
+        logger($sql);
+        httpStatus(500);
     }
     $conn->close();
 }
