@@ -4,6 +4,7 @@ import { Avatar, Flex, List, Space, Tag, Typography } from 'antd';
 import { Link } from 'react-router-dom';
 import { APP_ROUTES } from '../routes';
 import Search from 'antd/es/input/Search';
+import AdComponent from './../components/Ads'
 
 function HomePage(props) {
     const { website: w, category } = useMyList()
@@ -26,22 +27,24 @@ function HomePage(props) {
             // footer={<div>Footer</div>}
             // bordered
             dataSource={search ? searchArray(website, 'name', search) : website || []}
-            renderItem={(w) => (
-                <List.Item key={w.id} style={{ borderRight: `8px solid hsl(${w.color_hue}deg, 70%, 50%)` }}>
-                    <Link to={APP_ROUTES.CHANNEL_ID(w.id)} style={{ display: "block", width: '100%' }}>
-                        <Flex justify='space-between' className='p-4'>
-                            <div>
-                                <Typography.Title level={5} style={{ margin: 0 }}>{w.name} {w.is18Plus == 'yes' && <Tag color='#ff0000' bordered={false}>18+</Tag>}</Typography.Title>
-                                <Typography.Text type='secondery'>{w.url}</Typography.Text>
-                                <br />
-                                {
-                                    w.categories?.map(c => <Tag>{c.name}</Tag>)
-                                }
-                            </div>
-                            {w.site_icon_url && <Avatar src={<img src={w.site_icon_url} />} />}
-                        </Flex>
-                    </Link>
-                </List.Item>
+            renderItem={(w, i) => (
+                <>
+                    <List.Item key={w.id} style={{ borderRight: `8px solid hsl(${w.color_hue}deg, 70%, 50%)` }}>
+                        <Link to={APP_ROUTES.CHANNEL_ID(w.id)} style={{ display: "block", width: '100%' }}>
+                            <Flex justify='space-between' className='p-4'>
+                                <div>
+                                    <Typography.Title level={5} style={{ margin: 0 }}>{w.name} {w.is18Plus == 'yes' && <Tag color='#ff0000' bordered={false}>18+</Tag>}</Typography.Title>
+                                    <Typography.Text type='secondery'>{w.url}</Typography.Text>
+                                    <br />
+                                    {
+                                        w.categories?.map(c => <Tag>{c.name}</Tag>)
+                                    }
+                                </div>
+                                {w.site_icon_url && <Avatar src={<img src={w.site_icon_url} />} />}
+                            </Flex>
+                        </Link>
+                    </List.Item>
+                </>
             )}
         />
     );

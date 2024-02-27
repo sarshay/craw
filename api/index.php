@@ -18,22 +18,23 @@ $paths =  parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $param = explode('/', $paths);
 array_shift($param);
 $input = file_get_contents('php://input');
-$routeFile = __DIR__ . "/src/routes/" . basename($param[0]) . ".php";
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($param[0]) {
+    $routeFile = __DIR__ . "/src/routes/" . basename($param[0]) . ".php";
     // Check if the route file exists
     if (file_exists($routeFile)) {
+
         include_once $routeFile;
         // Handle response as needed
     } else {
         // var_dump($param);
         // var_dump($routeFile);
-        httpStatus(404);
+        // httpStatus(404);
+        include_once __DIR__ . "/src/routes/index.php";
     }
 } else {
-    // No route specified, provide welcome message
-    echo "Welcome";
+    httpStatus(404);
 }
 
 

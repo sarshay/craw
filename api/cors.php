@@ -1,5 +1,4 @@
 <?php
-header('Content-Type: application/json');
 
 // Allow requests from specific origins
 $allowedOrigins = array(

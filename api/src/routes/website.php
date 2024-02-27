@@ -16,8 +16,8 @@ $schema = [
 ];
 switch ($method) {
     case 'GET':
-        $body['id'] = $id;
-        $body = makeUp($_POST, $schema[$method], true);
+        $_GET['id'] = $id;
+        $body = makeUp($_GET, $schema[$method], true);
         // logger('some one');
         if (!theUser()) {
             $body['status'] = isset($body["status"]) ? $body["status"] : 'active';

@@ -4,7 +4,8 @@ function GetWebsite($filter = null)
 {
     global $conn;
 
-
+    // var_dump($filter);
+    // exit;
 
     if (isset($filter['id'])) {
 
@@ -19,7 +20,7 @@ function GetWebsite($filter = null)
             return $result->fetch_assoc();
         } else {
             logger($conn->error);
-            httpStatus(500);
+            httpStatus(404);
         }
     } else {
         $filter_ = [];
