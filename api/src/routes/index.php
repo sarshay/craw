@@ -39,6 +39,16 @@
         document.write('<scr' + 'ipt type="text/javascript" src="//www.topcreativeformat.com/f2ac0de11bd26e71eb191826242bfceb/invoke.js"></scr' + 'ipt>');
     </script>
     <?= $contentData->content->rendered; ?>
+    <script type="text/javascript">
+        atOptions = {
+            'key': 'f2ac0de11bd26e71eb191826242bfceb',
+            'format': 'iframe',
+            'height': 250,
+            'width': 300,
+            'params': {}
+        };
+        document.write('<scr' + 'ipt type="text/javascript" src="//www.topcreativeformat.com/f2ac0de11bd26e71eb191826242bfceb/invoke.js"></scr' + 'ipt>');
+    </script>
 </body>
 
 </html>

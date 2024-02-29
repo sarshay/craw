@@ -34,6 +34,17 @@ export function PostThumbnail({ data, wpInfo, type }) {
                             {TheHtml(p.excerpt.rendered)}</Typography.Paragraph>
                     </div>
                 </div>)
+        case "list":
+            return (
+                <div
+                >
+                    {img && <img alt="example" src={img} className='h-16 w-16 object-cover float-start' />}
+                    {ago(p.date)}
+                    <Typography.Paragraph ellipsis={{ rows: img ? 4 : 7 }} type='secondery'>
+                        <Typography.Title level={img ? 4 : 3}>{TheHtml(p.title.rendered)}</Typography.Title>
+                        {TheHtml(p.excerpt.rendered)}</Typography.Paragraph>
+
+                </div>)
 
         default:
             return (
