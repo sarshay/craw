@@ -16,7 +16,8 @@ import {
 // import connectSocket from "../socket";
 import { getTokenFromLocalStorage } from "../hooks/auth/auth";
 import { makeFresh } from "../utils/function";
-import { Header } from "antd/es/layout/layout";
+import { Footer, Header } from "antd/es/layout/layout";
+import MyPlayer from "../components/player";
 
 const RepoContext = createContext();
 
@@ -69,6 +70,7 @@ const LayoutContext = createContext(); // Rename the context variable
 
 export const LayoutProvider = ({ children }) => {
   const [messageAPi, contextHolder] = message.useMessage();
+  const [medias, setMedias] = useState({});
   const [header, setHeader] = useState(null);
   const [header2, setHeader2] = useState(null);
 
@@ -78,14 +80,17 @@ export const LayoutProvider = ({ children }) => {
     setHeader,
     header2,
     setHeader2,
+    setMedias,
+    medias,
   };
 
   return (
     <LayoutContext.Provider value={contextValue}>
-      <Layout style={{ minHeight: "100vh" }}>
+      {contextHolder}
+      <MyPlayer medias={medias?.medias} title={medias?.title} />
+      <Layout>
         {header}
         {header2}
-        {contextHolder}
         {children}
       </Layout>
     </LayoutContext.Provider>

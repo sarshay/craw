@@ -3,7 +3,7 @@ require_once __DIR__ . '/../auth/auth.php';
 require_once __DIR__ . '/../models/model.php';
 
 $table = 'website';
-$id = isset($param[1]) ? $param[1] : null;
+$id = isset($param[2]) ? $param[2] : null;
 
 $cols = [[], ["error_code", "url", "scan_by"]];
 $schema = [

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLayout, useMyList, useTheme } from '../providers/context';
-import { Avatar, Col, Drawer, Flex, List, Menu, Row, Space, Spin, Tabs, Typography } from 'antd';
+import { Avatar, Col, Drawer, Flex, List, Menu, Row, Space, Spin, Tabs, Typography, theme } from 'antd';
 import { Link, Outlet, unstable_HistoryRouter, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { APP_ROUTES } from '../routes';
 import Search from 'antd/es/input/Search';
@@ -113,16 +113,27 @@ function ChannelPage(props) {
         // setSearchParams(old => { return { c: category_id, search: value } })
         navigate(APP_ROUTES.SEARCH_IN_CHANNEL(channelId, value))
     };
+
+    // const { setDrawer } = useLayout();
+    // useEffect(() => {
+    //     if (!!postId) {
+    //         setDrawer("Outlet")
+    //     } else {
+    //         setDrawer(null)
+    //     }
+    // }, [postId])
     return (
         <div key={channelId}>
-            <Is18PlusCover is18Plus={theWp.is18Plus == 'yes'}/>
+            <Is18PlusCover is18Plus={theWp.is18Plus == 'yes'} />
             <Drawer
-                width={'100%'}
+                // width={'100%'}
+                height={'100%'}
+                placement={'bottom'}
                 closeIcon={<ArrowLeftOutlined />}
                 closable={false}
                 open={!!postId}
                 className='noPaddingDrawer'>
-                <Outlet />
+                <Outlet/>
             </Drawer>
             <div className={`${direction == 'down' ? "-translate-y-16" : ""} bg-white transition duration-150 ease-out px-4 py-2 sticky top-0`}>
                 <Flex justify='space-between' align='center' gap={16}>
@@ -140,10 +151,10 @@ function ChannelPage(props) {
                     {!(searchOpen || searchWord) && <SearchOutlined onClick={() => { setSearchOpen(true) }} />}
                 </Flex>
             </div>
-            <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 min-h-screen'>
+            <div className='m-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 min-h-screen'>
                 {
                     (posts || []).map((w) => (
-                        <Link key={w.id} to={`${APP_ROUTES.POST_DETAIL(channelId, w.id)}${currentQuery}`} style={{ display: "block", width: '100%' }}>
+                        <Link key={`${w.id}`} to={`${APP_ROUTES.POST_DETAIL(channelId, w.id)}${currentQuery}`} style={{ display: "block", width: '100%' }}>
                             <PostThumbnail data={w} wpInfo={theWp} type={type} />
                         </Link>
                     ))

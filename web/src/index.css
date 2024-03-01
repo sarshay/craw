@@ -26,4 +26,7 @@ code {
     height: auto;
     object-fit: contain;
   }
+  *{
+    max-width: -webkit-fill-available;
+  }
 }

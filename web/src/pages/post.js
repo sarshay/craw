@@ -26,6 +26,9 @@ import { ago } from "../utils/time";
 import { useScrollDirection } from "../utils/function";
 import { useCookies } from "react-cookie";
 import Is18PlusCover from "../components/18PlusCover";
+import { scanHTMLForVideoAudio } from "../components/medisScanner";
+import ReactPlayer from "react-player";
+import MyPlayer from "../components/player";
 
 function PostPage(props) {
   const [cookies, setCookie] = useCookies(["isUser18Plus"]);
@@ -108,7 +111,13 @@ function PostPage(props) {
   imgFull =
     imgFull &&
     (imgFull.startsWith("http") ? imgFull : `${theWp?.url}${imgFull}`);
-
+  const medias = scanHTMLForVideoAudio(postData?.content?.rendered);
+  const { setMedias } = useLayout();
+  useEffect(() => {
+    if (medias.length > 0) {
+      setMedias({medias, title:postData?.title?.rendered});
+    }
+  }, [medias]);
   return (
     <div className="px-4">
       <Is18PlusCover is18Plus={theWp.is18Plus && theWp.is18Plus == "yes"} />
@@ -152,7 +161,7 @@ function PostPage(props) {
           </center>
         )}
         {postData && (
-          <div className="mb-8">
+          <div className="mb-8 text-wrap break-words">
             <Typography.Title level={3}>
               {TheHtml(postData?.title?.rendered)}
             </Typography.Title>

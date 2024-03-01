@@ -1,5 +1,5 @@
 <?php
-include __DIR__ . '/env.php';
+include_once __DIR__ . '/env.php';
 include_once __DIR__ . '/cors.php';
 
 // Include utility files
@@ -20,8 +20,8 @@ array_shift($param);
 $input = file_get_contents('php://input');
 $method = $_SERVER['REQUEST_METHOD'];
 
-if ($param[0]) {
-    $routeFile = __DIR__ . "/src/routes/" . basename($param[0]) . ".php";
+if ($param[1]) {
+    $routeFile = __DIR__ . "/src/routes/" . basename($param[1]) . ".php";
     // Check if the route file exists
     if (file_exists($routeFile)) {
 

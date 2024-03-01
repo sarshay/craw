@@ -3,7 +3,7 @@ require_once __DIR__ . '/../auth/auth.php';
 require_once __DIR__ . '/../models/model.php';
 
 $table = 'fb_page';
-$id = isset($param[1]) ? $param[1] : null;
+$id = isset($param[2]) ? $param[2] : null;
 
 $cols = [[], ["id", 'name', 'access_token', 'updated_time', 'created_time']];
 $schema = [

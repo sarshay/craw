@@ -25,8 +25,8 @@ import FacebookPage from "./pages/admin/facebook";
 
 var development = false;
 export const BASE_URL = development
-  ? "http://localhost"
-  : "https://himyanmar.online";
+  ? "http://localhost/api"
+  : "/api";
 export const APP_API_URL = `${BASE_URL}`;
 export const APP_WS_URL = BASE_URL;
 export const API_ROUTES = {

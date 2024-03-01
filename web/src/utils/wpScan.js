@@ -9,10 +9,18 @@ function wpScan({ wpUrl, api_base_path = "/?rest_route=/" }) {
     ? `${wpUrl}${api_base_path}`
     : `${wpUrl}/?rest_route=/`;
 
+  const defaultHeader = {
+    withCredentials: false,
+    credentials: 'omit',
+    maxRedirects: 15,
+    // headers: {
+    //   "Access-Control-Allow-Origin": "*"
+    // },
+  };
   const getCategory = async () => {
     return await axios
       .get(`${baseUrl}wp/v2/categories`, {
-        withCredentials: false,
+        ...defaultHeader
       })
       .then(function (response) {
         return response.data;
@@ -32,11 +40,15 @@ function wpScan({ wpUrl, api_base_path = "/?rest_route=/" }) {
     ];
     return await axios
       .get(`${baseUrl}`, {
-        withCredentials: false,
+        ...defaultHeader,
         params: { _fields: `${infoKeyList.join(",")}` },
       })
       .then(function (response) {
-        return { ...response.data, api_base_path:isWpJson?'/wp-json/':'/?rest_route=/', error_code: null };
+        return {
+          ...response.data,
+          api_base_path: isWpJson ? "/wp-json/" : "/?rest_route=/",
+          error_code: null,
+        };
       })
       .catch(async function (error) {
         if (isWpJson) {
@@ -70,7 +82,7 @@ function wpScan({ wpUrl, api_base_path = "/?rest_route=/" }) {
     ];
     return await axios
       .get(`${baseUrl}wp/v2/posts`, {
-        withCredentials: false,
+        ...defaultHeader,
         params: {
           page: 1,
           _fields: `${infoKeyList.join(",")}`,
@@ -126,7 +138,7 @@ function wpScan({ wpUrl, api_base_path = "/?rest_route=/" }) {
     ];
     return await axios
       .get(`${baseUrl}wp/v2/posts/${id}`, {
-        withCredentials: false,
+        ...defaultHeader,
         params: {
           page: 1,
           _fields: `${infoKeyList.join(",")}`,

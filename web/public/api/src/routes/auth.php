@@ -1,11 +1,11 @@
 <?php
 require_once __DIR__ . '/../auth/auth.php';
 
-if (isset($param[1]) && $param[1] !== "") {
+if (isset($param[2]) && $param[2] !== "") {
 
     switch ($method) {
         case 'POST':
-            switch ($param[1]) {
+            switch ($param[2]) {
                 case 'signin':
                     $body = makeUp($_POST, [['username', 'password'], []], true);
                     $token = signIn($body['username'], $body['password']);
@@ -19,7 +19,7 @@ if (isset($param[1]) && $param[1] !== "") {
             break;
 
         case 'GET':
-            switch ($param[1]) {
+            switch ($param[2]) {
                 case 'me':
                     jsonResponse(200, theUser());
                     break;

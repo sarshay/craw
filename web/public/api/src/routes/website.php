@@ -5,7 +5,7 @@ require_once __DIR__ . '/../models/website.php';
 require_once __DIR__ . '/../models/categoryMap.php';
 
 $table = 'website';
-$id = isset($param[1]) ? $param[1] : null;
+$id = isset($param[2]) ? $param[2] : null;
 
 $cols = [[], ["id", 'name', 'description', 'url', 'site_icon_url', 'color_hue', 'keywords', 'api_base_path', 'updated_time', 'created_time', 'status', 'last_scan_time', 'error_code', 'scan_by', 'category_ids', 'is18Plus']];
 $schema = [

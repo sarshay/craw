@@ -1,0 +1,22 @@
+RewriteEngine On
+
+
+#to get Bearer
+RewriteCond %{HTTP:Authorization} .+
+RewriteRule ^ - [E=HTTP_AUTHORIZATION:%0]
+
+
+RewriteBase /
+RewriteRule ^index\.html$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.html [L]
+
+
+
+# php -- BEGIN cPanel-generated handler, do not edit
+# Set the “ea-php74” package as the default “PHP” programming language.
+<IfModule mime_module>
+    AddType application/x-httpd-php .html .htm
+</IfModule>
+# php -- END cPanel-generated handler, do not edit

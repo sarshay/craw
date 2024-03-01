@@ -56,7 +56,7 @@ if (currentPath(1) == "home") {
         }
     } else {
         header('HTTP/1.0 404 Not Found', true, 404);
-        echo "404";
+        // echo "404";
     }
 }
 

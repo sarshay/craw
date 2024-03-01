@@ -1,6 +1,7 @@
 <?php
+
 $defalutTitle =  "ကျီကန်း";
-$color = "#222222";
+$color = "#ffffff";
 $title = "ကျီကန်း";
 $description = "အကုန်သိ";
 $imageUrl =  "http://" . $_SERVER['SERVER_NAME'] . "/issets/crow.jpg";
@@ -10,8 +11,13 @@ $canonical = "http://" . $_SERVER['SERVER_NAME'];
 $mybackendApiUrl = "/";
 
 include_once __DIR__ . '/connection.php';
+include_once __DIR__ . '/../utility/httpStatus.php';
 include_once __DIR__ . '/../models/website.php';
+$paths =  parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$param = explode('/', $paths);
+array_shift($param);
 if (isset($param[1])) {
+    $title= "hhhhh";
     $channel_id = $param[0]; //explode("_", $_GET['ids'])[0];
     $post_id = $param[1]; //explode("_", $_GET['ids'])[1];
     // $path =  parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -63,9 +69,6 @@ if (isset($param[1])) {
             // $keyWords = strip_tags($data->title);
         }
     }
-}
-else{
-    httpStatus(404);
 }
 
 
