@@ -22,8 +22,9 @@ import PageLayout from "./pages/layout";
 import ChannelPage from "./pages/channel";
 import PostPage from "./pages/post";
 import FacebookPage from "./pages/admin/facebook";
+import TargetPage from "./pages/target";
 
-var development = false;
+var development = true;
 export const BASE_URL = development
   ? "http://localhost/api"
   : "/api";
@@ -96,6 +97,11 @@ export const pagesList = [
     key: "home",
     path: "/",
     element: <HomePage />,
+  },
+  {
+    key: "target",
+    path: "/t/:linkId",
+    element: <TargetPage/>,
   },
   {
     key: "channelId",
