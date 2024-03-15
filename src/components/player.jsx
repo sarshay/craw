@@ -15,7 +15,7 @@ function MyPlayer({ medias, title }) {
             }
 
         }
-        console.log({ medias })
+        // console.log({ medias })
     }, [medias])
     return (selected && <div className={` bg-black/80 backdrop-blur-lg text-white fixed top-12 right-0 ${isFull ? `py-2 w-full h-auto` : `w-32 h-16`} z-[1010]`} onClick={() => { !isFull && setIsFull(true) }}>
         {isFull && <Flex justify='flex-end' align='center' gap={16} className='px-2'>

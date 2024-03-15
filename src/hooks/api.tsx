@@ -11,7 +11,6 @@ export function useApi(url: string, theParams?: object | null) {
 
   const myFetch = () => {
     setLoading(true);
-    setData(null);
     axios
       .get(url, {
         params,
@@ -36,8 +35,11 @@ export function useApi(url: string, theParams?: object | null) {
     setData(null);
     myFetch();
   }, [url, params]);
+  const refresh = () => {
+    myFetch();
+  };
 
-  return { loading, error, data, setData, setParams };
+  return { loading, error, data, setData, setParams, refresh };
 }
 
 export async function cacheDelete(cacheName: string, url: RequestInfo | URL) {

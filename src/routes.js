@@ -1,11 +1,15 @@
 import React from "react";
 import {
+  ConsoleSqlOutlined,
   DesktopOutlined,
   FacebookFilled,
   FileOutlined,
+  FolderOpenTwoTone,
+  FolderOutlined,
   PieChartOutlined,
   TeamOutlined,
   UserOutlined,
+  WeiboOutlined,
 } from "@ant-design/icons";
 import WebsitePage from "./pages/admin/website";
 import CategoryPage from "./pages/admin/category";
@@ -23,11 +27,14 @@ import ChannelPage from "./pages/channel";
 import PostPage from "./pages/post";
 import FacebookPage from "./pages/admin/facebook";
 import TargetPage from "./pages/target";
+import VisitorMap from "./pages/admin/VisitorMap";
+import Visitor from "./pages/admin/Visitor";
+import { GrLink, GrMapLocation, GrTarget } from "react-icons/gr";
+import MyLink from "./pages/admin/Link";
+import Target from "./pages/admin/Target";
 
 var development = true;
-export const BASE_URL = development
-  ? "http://localhost/api"
-  : "/api";
+export const BASE_URL = development ? "http://localhost/api" : "/api";
 export const APP_API_URL = `${BASE_URL}`;
 export const APP_WS_URL = BASE_URL;
 export const API_ROUTES = {
@@ -38,6 +45,8 @@ export const API_ROUTES = {
   FB_PAGE: `${APP_API_URL}/fb`,
   CATEGORY: `${APP_API_URL}/category`,
   ERROR_REPORT: `${APP_API_URL}/error`,
+  VISITOR_REPORT: `${APP_API_URL}/_`,
+  LINK: `${APP_API_URL}/link`,
 };
 const admin_route = "/admin";
 export const APP_ROUTES = {
@@ -48,6 +57,10 @@ export const APP_ROUTES = {
   WEBSITE: `${admin_route}/website`,
   CONSOLE: `${admin_route}/console`,
   FACEBOOK: `${admin_route}/fb`,
+  VISITOR: `${admin_route}/visitor`,
+  LINK: `${admin_route}/link`,
+  TARGET: `${admin_route}/target`,
+  VISITOR_MAP: `${admin_route}/visitorMap`,
   SCAN_WP: (url) => `${admin_route}/console/?wpUrl=${url}`,
   CHANNEL_ID: (id) => `/${id}`,
   SEARCH_IN_CHANNEL: (channelId, word) => `/${channelId}/?search=${word}`,
@@ -64,21 +77,21 @@ export const adminPagesList = [
   },
   {
     key: "website",
-    icon: null,
+    icon: <WeiboOutlined />,
     label: "Website",
     path: APP_ROUTES.WEBSITE,
     element: <WebsitePage />,
   },
   {
     key: "category",
-    icon: null,
+    icon: <FolderOutlined />,
     label: "Category",
     path: APP_ROUTES.CATEGORY,
     element: <CategoryPage />,
   },
   {
     key: "console",
-    icon: null,
+    icon: <ConsoleSqlOutlined />,
     label: "Console",
     path: APP_ROUTES.CONSOLE,
     element: <ConsolePage />,
@@ -89,6 +102,34 @@ export const adminPagesList = [
     label: "Facebook Page",
     path: APP_ROUTES.FACEBOOK,
     element: <FacebookPage />,
+  },
+  {
+    key: "visitorLog",
+    icon: <UserOutlined />,
+    label: "Visitor Log",
+    path: APP_ROUTES.VISITOR,
+    element: <Visitor />,
+  },
+  {
+    key: "VisitorMap",
+    icon: <GrMapLocation />,
+    label: "Visitor Map",
+    path: APP_ROUTES.VISITOR_MAP,
+    element: <VisitorMap />,
+  },
+  {
+    key: "link",
+    icon: <GrLink />,
+    label: "Link",
+    path: APP_ROUTES.LINK,
+    element: <MyLink />,
+  },
+  {
+    key: "target",
+    icon: <GrTarget />,
+    label: "Target",
+    path: APP_ROUTES.LINK,
+    element: <Target />,
   },
 ];
 
@@ -101,7 +142,7 @@ export const pagesList = [
   {
     key: "target",
     path: "/t/:linkId",
-    element: <TargetPage/>,
+    element: <TargetPage />,
   },
   {
     key: "channelId",
@@ -126,13 +167,13 @@ export default function MyRouter() {
       path: APP_ROUTES.DASHBOARD,
       element: <OfficeLayout />,
       errorElement: "page not found",
-      children: [...adminPagesList],
+      children: adminPagesList,
     },
     {
       path: "/",
       element: <PageLayout />,
       errorElement: "error",
-      children: [...pagesList],
+      children: pagesList,
     },
   ]);
   return <RouterProvider router={router} />;
