@@ -34,7 +34,7 @@ import MyLink from "./pages/admin/Link";
 import Target from "./pages/admin/Target";
 
 var development = true;
-export const BASE_URL = development ? "http://localhost/api" : "/api";
+export const BASE_URL = development ? "http://localhost/api" : "https://himyanmar.online/api";
 export const APP_API_URL = `${BASE_URL}`;
 export const APP_WS_URL = BASE_URL;
 export const API_ROUTES = {

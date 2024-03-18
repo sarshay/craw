@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Breadcrumb, Button, FloatButton, Layout, Menu, message, theme } from "antd";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Link, Route, Routes, useNavigate } from "react-router-dom";
 import { useApi } from "../../hooks/api";
 import DefaultPage from "../default";
 
@@ -39,7 +39,9 @@ const OfficeLayout = () => {
           >
 
             <div className="sticky top-0">
-              <div className="demo-logo-vertical" />
+              <div className="p-2">
+              <Link to={'/'}>Home</Link>
+              </div>
               <Menu
                 theme="dark"
                 defaultSelectedKeys={adminPagesList?.[0]?.key}
@@ -66,7 +68,7 @@ const OfficeLayout = () => {
           </Layout>
         </Layout>
       </LayoutProvider>
-      
+
       <FloatButton onClick={() => setIsDark(!isDark)} icon={<MoonFilled />} />
     </RepoProvider>
   );

@@ -31,6 +31,7 @@ if (isset($param[0]) && $param[0] == 't') {
             httpStatus(404);
         }
     }
+} elseif (isset($param[0]) && $param[0] == 'admin') {
 } elseif (isset($param[1]) && $param[1] !== '') {
     $channel_id = $param[0]; //explode("_", $_GET['ids'])[0];
     $post_id = $param[1]; //explode("_", $_GET['ids'])[1];

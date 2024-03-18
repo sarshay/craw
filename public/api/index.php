@@ -3,8 +3,8 @@ include_once __DIR__ . '/env.php';
 include_once __DIR__ . '/cors.php';
 
 // Include utility files
-include_once __DIR__ . '/src/utility/httpStatus.php';
 include_once __DIR__ . '/src/utility/logger.php';
+include_once __DIR__ . '/src/utility/httpStatus.php';
 include_once __DIR__ . '/src/utility/response.php';
 include_once __DIR__ . '/src/auth/auth.php';
 include_once __DIR__ . '/src/utility/oop.php';

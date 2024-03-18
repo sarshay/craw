@@ -25,9 +25,9 @@ function InfiniteScroll({ hasMore, loading, loadMore }) {
     }
   }, [observerTarget, loading, hasMore]);
   return (
-    <div style={{ paddingBottom: 100, marginTop: -500 }}>
+    <div  ref={observerTarget} style={{ paddingTop: 300, marginTop: -400 }}>
       {hasMore && (
-        <div ref={observerTarget}>
+        <div>
           {loading && (
             <center><Spin /></center>
           )}
