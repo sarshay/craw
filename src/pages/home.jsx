@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useMyList } from '../providers/context';
 import { Avatar, Flex, List, Space, Tag, Typography } from 'antd';
 import { Link } from 'react-router-dom';
-import { APP_ROUTES } from '../routes';
+import { APP_ROUTES, IMG } from '../routes';
 import Search from 'antd/es/input/Search';
 import AdComponent from './../components/Ads'
 
@@ -34,14 +34,18 @@ function HomePage(props) {
                             <Link to={APP_ROUTES.CHANNEL_ID(w.id)} style={{ display: "block", width: '100%' }}>
                                 <Flex justify='space-between' className='p-4'>
                                     <div>
-                                        <Typography.Title level={5} style={{ margin: 0,color:`hsl(${w.color_hue}deg, 70%, 50%)` }}>{w.name} {w.is18Plus == 'yes' && <Tag color='#ff0000' bordered={false}>18+</Tag>}</Typography.Title>
+                                        <Typography.Title level={5} style={{ margin: 0 }}>{w.name} {w.is18Plus == 'yes' && <Tag color='#ff0000' bordered={false}>18+</Tag>}</Typography.Title>
                                         <Typography.Text type='secondery'>{w.url}</Typography.Text>
                                         <br />
                                         {
                                             w.categories?.map(c => <Tag>{c.name}</Tag>)
                                         }
                                     </div>
-                                    {w.site_icon_url && <Avatar src={<img src={w.site_icon_url} />} />}
+                                    {w.site_icon_url && <Avatar src={<img src={w.site_icon_url} onError={({ currentTarget }) => {
+                                        currentTarget.onerror = null; // prevents looping
+                                        currentTarget.src = IMG.logo;
+                                    }}
+                                    />} />}
                                 </Flex>
                             </Link>
                         </List.Item>
