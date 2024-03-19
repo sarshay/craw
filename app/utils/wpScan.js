@@ -181,3 +181,12 @@ function errorReport({ error, wpUrl }) {
       .catch((err) => {});
   }
 }
+
+export const findImage = (p, baseUrl) => {
+
+  var img = p?._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes?.medium?.source_url
+      || p?._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes?.medium_large?.source_url
+      || p?._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes?.full?.source_url;
+  return img && (img.startsWith('http') ? img : `${baseUrl}${img}`)
+
+}

@@ -8,7 +8,7 @@ export function useApi({
   url,
   theParams = null,
   cacheKey,
-  expirationTime = 0,
+  expirationTime = 3600,
 }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState(false);
@@ -53,7 +53,7 @@ export function useApi({
       });
       setLoading(false);
       setError(false);
-      console.log(response)
+      console.log("loaded")
       if (response.status === 204) {
         setData(null);
       } else {

@@ -1,9 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Button, FlatList, StyleSheet, Text, View } from "react-native";
-import { fetchDataWithCache } from "../utils/fetchCache";
+import React, { useContext, useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Button,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { API_ROUTES } from "../routes";
 import { useApi } from "../hooks/api";
 import { StatusBar } from "expo-status-bar";
+import WebsiteContext from "../providers/WebsiteProvider";
 
 const styles = StyleSheet.create({
   container: {
@@ -17,25 +24,26 @@ const styles = StyleSheet.create({
   },
 });
 
-const HomeScreen = () => {
-  const { data, loading, refresh } = useApi({
-    // url: "https://api.heinsoe.com",
-    url: API_ROUTES.WEBSITE,
-    cacheKey: "websites",
-  });
-
+const HomeScreen = ({navigation}) => {
+  const { websites, websitesLoading } = useContext(WebsiteContext);
+  const goToChannelScreen = (id) => {
+    navigation.navigate("ChannelScreen", { id });
+  };
   return (
     <View style={styles.container}>
-      <StatusBar style="auto" />
       <FlatList
-        refreshing={loading}
-        onRefresh={refresh}
-        data={data}
+        refreshing={websitesLoading}
+        // onRefresh={refresh}
+        data={websites}
         // onEndReached={}
         // onEndReachedThreshold={0.8}
         // ListFooterComponent={data && <ActivityIndicator/>}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <Text style={styles.item}>{item.name}</Text>}
+        renderItem={({ item }) => (
+          <Text onPress={() => goToChannelScreen(item.id)} style={styles.item}>
+            {item.name}
+          </Text>
+        )}
       />
     </View>
   );
