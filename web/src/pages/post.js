@@ -61,7 +61,7 @@ function PostPage(props) {
         })
         .catch((error) => {
           messageAPi.error(error?.message);
-          // setWpError(error?.message)
+          throw Error('No Post')
         })
         .finally(() => {
           setLoading(false);

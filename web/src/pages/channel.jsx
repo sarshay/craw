@@ -16,6 +16,14 @@ function ChannelPage(props) {
     const { website } = useMyList()
     let { channelId, postId } = useParams();
     const theWp = website.find(w => w.id == channelId);
+    if (theWp) {
+        return <Page theWp={theWp} />
+    } else {
+        throw Error('Page Note Found')
+    }
+}
+function Page({ theWp }) {
+    let { channelId, postId } = useParams();
     const [searchParams, setSearchParams] = useSearchParams();
     const category_id = searchParams.get("c")
     const searchWord = searchParams.get("search")
@@ -31,7 +39,7 @@ function ChannelPage(props) {
     const [categoryLoading, setCategoryLoading] = useState([])
 
     // let _category = query.get("categories") ? `&categories=${query.get("categories")}` : ``;
-    const wp = wpScan({ wpUrl: theWp?.url, api_base_path: theWp.api_base_path });
+    const wp = wpScan({ wpUrl: theWp?.url, api_base_path: theWp?.api_base_path });
 
     const { messageAPi } = useLayout();
     const postCount = cuttentCat ? cuttentCat.count : category.reduce((acc, c) => acc + c.count, 0);
@@ -71,7 +79,6 @@ function ChannelPage(props) {
         setHasMore(true)
         setPosts([])
         setPage(1)
-        fetchPost()
     }, [theWp, category_id, searchWord])
 
     // useEffect(()=>{
@@ -133,7 +140,7 @@ function ChannelPage(props) {
                 closable={false}
                 open={!!postId}
                 className='noPaddingDrawer'>
-                <Outlet/>
+                <Outlet />
             </Drawer>
             <div className={`${direction == 'down' ? "-translate-y-16" : ""} bg-white transition duration-150 ease-out px-4 py-2 sticky top-0`}>
                 <Flex justify='space-between' align='center' gap={16}>
@@ -151,7 +158,7 @@ function ChannelPage(props) {
                     {!(searchOpen || searchWord) && <SearchOutlined onClick={() => { setSearchOpen(true) }} />}
                 </Flex>
             </div>
-            <div className='m-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 min-h-screen'>
+            <div className='m-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 min-h-96'>
                 {
                     (posts || []).map((w) => (
                         <Link key={`${w.id}`} to={`${APP_ROUTES.POST_DETAIL(channelId, w.id)}${currentQuery}`} style={{ display: "block", width: '100%' }}>

@@ -8,7 +8,7 @@ import AdComponent from './../components/Ads'
 
 function HomePage(props) {
     const { website: w, category } = useMyList()
-    const website = w.map(web => {
+    const website = w?.map(web => {
         return {
             ...web,
             categories: web.category_ids?.split(',')?.map(c => {

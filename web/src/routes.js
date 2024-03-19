@@ -32,7 +32,8 @@ import Visitor from "./pages/admin/Visitor";
 import { GrLink, GrMapLocation, GrTarget } from "react-icons/gr";
 import MyLink from "./pages/admin/Link";
 import Target from "./pages/admin/Target";
-import logo from "./logo.svg";
+import logo from "./logo.png";
+import TheError from "./pages/errors";
 
 export const IMG = {
   logo,
@@ -178,7 +179,7 @@ export default function MyRouter() {
     {
       path: "/",
       element: <PageLayout />,
-      errorElement: "error",
+      errorElement: <TheError/>,
       children: pagesList,
     },
   ]);
