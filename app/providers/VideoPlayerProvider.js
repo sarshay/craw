@@ -12,18 +12,21 @@ import {
   TouchableHighlightComponent,
   ActivityIndicator,
   Platform,
+  ScrollView,
+  NativeModules,
 } from "react-native";
+const { StatusBarManager } = NativeModules;
 
 import { Video, ResizeMode } from "expo-av";
 import { TouchableHighlight } from "react-native-gesture-handler";
 // import Icon from "react-native-vector-icons/Ionicons";
 import Icon from "react-native-vector-icons/Ionicons";
-import { Card, IconButton } from "react-native-paper";
+import { IconButton } from "react-native-paper";
 import * as FileSystem from "expo-file-system";
 import { shareAsync } from "expo-sharing";
+import { StatusBar } from "expo-status-bar";
 // Ionicons
 const VideoPlayerContext = createContext();
-
 export const VideoPlayerProvider = ({ children }) => {
   const [playVideo, setPlayVideo] = useState(null);
   const [videoList, setVideoList] = useState([]);
@@ -39,7 +42,7 @@ export const VideoPlayerProvider = ({ children }) => {
   };
   useEffect(() => {
     if (playVideo) {
-      setLoading(true);
+      setLoading(!playerStatus.isPlaying && true);
       setPlayerOpen(true);
     }
   }, [playVideo]);
@@ -148,14 +151,15 @@ export const VideoPlayerProvider = ({ children }) => {
             />
           </Pressable>
           {playerOpen ? (
-            <View>
+            <ScrollView>
+              <StatusBar style="light" />
               <Text>{playVideo?.title}</Text>
               <IconButton
                 icon={"content-save"}
                 size={24}
                 onPress={() => downloadFromUrl(playVideo.src)}
               />
-            </View>
+            </ScrollView>
           ) : (
             <View style={styles.flex}>
               <Pressable
@@ -195,8 +199,11 @@ export default useVideoPlayer = () => useContext(VideoPlayerContext);
 const { height } = Dimensions.get("window");
 const styles = StyleSheet.create({
   container: {
-    position: "fixed",
-    height: height,
+    position: "absolute",
+    height: "100%", //height,
+    width: "100%",
+    paddingTop: StatusBarManager.HEIGHT,
+    backgroundColor: "#333333",
   },
   videoContainer: {
     width: "100%",

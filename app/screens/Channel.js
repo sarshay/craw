@@ -11,26 +11,41 @@ import {
 import { API_ROUTES } from "../routes";
 import { useApi } from "../hooks/api";
 import { StatusBar } from "expo-status-bar";
-import WebsiteContext from "../providers/WebsiteProvider";
-import wpScan from "../utils/wpScan";
+import GeneralContext from "../providers/GeneralProviter";
+import wpScan, { findImage } from "../utils/wpScan";
+import { Appbar, Card, IconButton } from "react-native-paper";
+import WebView from "react-native-webview";
+import HTMLView from "react-native-htmlview";
+import { cleanHtmlTags } from "../utils/function";
+import { ago } from "../utils/time";
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    paddingTop: 22,
+    marginTop: 0,
+    margin: 6,
   },
   item: {
-    padding: 10,
-    fontSize: 18,
-    height: 44,
+    flex: 0.5,
+    margin: 6,
   },
 });
 
 const ChannelScreen = ({ route, navigation }) => {
-  const { websites } = useContext(WebsiteContext);
+  const { websites } = useContext(GeneralContext);
   const { id } = route.params;
   const website = websites.find((a) => a.id == id);
-
+  useEffect(() => {
+    // Define the title after component rendering
+    navigation.setOptions({
+      title: website?.name,
+      headerRight: () => (
+        <IconButton
+          onPress={() => navigation.navigate("Search", { website })}
+          icon={"magnify"}
+        />
+      ),
+    });
+  }, [navigation]);
   if (website) {
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
@@ -104,38 +119,56 @@ const ChannelScreen = ({ route, navigation }) => {
     }, [website, category_id, searchWord]);
 
     return (
-      <View style={styles.container}>
-        <Text>{website.name}</Text>
-        <Text>{id}</Text>
-        <Text>{page}</Text>
-        <Text>{hasMore ? "hasMore" : ""}</Text>
-        <FlatList
-          //   refreshing={loading}
-          //   onRefresh={() => {}}
-          data={posts}
-          onEndReached={loadMore}
-          onEndReachedThreshold={0.8}
-          ListFooterComponent={posts && <ActivityIndicator />}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <Pressable
-              onPress={() =>
-                navigation.navigate("PostScreen", { website, ...item })
-              }
+      <FlatList
+        numColumns={2}
+        horizontal={false}
+        style={styles.container}
+        //   refreshing={loading}
+        //   onRefresh={() => {}}
+        data={posts}
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.8}
+        ListFooterComponent={posts && <ActivityIndicator />}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => {
+          const img = findImage(item, website?.url);
+          return (
+            <Card
+              style={styles.item}
+              onPress={() => navigation.navigate("Post", { website, ...item })}
             >
-              <Text>{item.title?.rendered}</Text>
-              <Text>{item.date}</Text>
-              <Text>{item.title?.rendered}</Text>
-              <Text>{item.title?.rendered}</Text>
-              <Text>{item.title?.rendered}</Text>
-              <Text>{item.title?.rendered}</Text>
-              <Text>{item.title?.rendered}</Text>
-              <Text>{item.title?.rendered}</Text>
-            </Pressable>
-          )}
-        />
-        {/* <Button onPress={loadMore} title="load more" /> */}
-      </View>
+              {img && <Card.Cover source={{ uri: img }} />}
+              {/* <Card.Title
+                title={item.title?.rendered}
+                subtitle={item.excerpt?.rendered}
+                // left={LeftContent}
+              /> */}
+              <Card.Content>
+                {/* <HTMLView
+                  value={item.title?.rendered}
+                  stylesheet={!img ? { fontSize: 24 } : {}}
+                  // renderNode={renderNode}
+                  addLineBreaks={true}
+                  lineBreak={"\n"}
+                /> */}
+                <Text>{ago(item.date)}</Text>
+                <Text variant="titleLarge" style={!img ? { fontSize: 24 } : {}}>
+                  {cleanHtmlTags(item.title?.rendered)}
+                </Text>
+                {!img && (
+                  <Text variant="bodyMedium" numberOfLines={5}>
+                    {cleanHtmlTags(item.excerpt?.rendered)}
+                  </Text>
+                )}
+              </Card.Content>
+              {/* <Card.Actions>
+                  <Button>Cancel</Button>
+                  <Button>Ok</Button>
+                </Card.Actions> */}
+            </Card>
+          );
+        }}
+      />
     );
   } else {
     return <Text>404</Text>;

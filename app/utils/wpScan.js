@@ -1,4 +1,3 @@
-
 import axios from "axios";
 import { API_ROUTES } from "../routes";
 //https://burmese.dvb.no/wp-json/wp/v2/posts?page=1&_fields=id,title,date,_links,excerpt,categories&_embed=wp:featuredmedia
@@ -11,7 +10,7 @@ function wpScan({ wpUrl, api_base_path = "/?rest_route=/" }) {
 
   const defaultHeader = {
     withCredentials: false,
-    credentials: 'omit',
+    credentials: "omit",
     maxRedirects: 15,
     // headers: {
     //   "Access-Control-Allow-Origin": "*"
@@ -20,7 +19,7 @@ function wpScan({ wpUrl, api_base_path = "/?rest_route=/" }) {
   const getCategory = async () => {
     return await axios
       .get(`${baseUrl}wp/v2/categories`, {
-        ...defaultHeader
+        ...defaultHeader,
       })
       .then(function (response) {
         return response.data;
@@ -99,32 +98,29 @@ function wpScan({ wpUrl, api_base_path = "/?rest_route=/" }) {
       });
   };
 
-  // const getSearch = async (param) => {
-  //   const infoKeyList = [
-  //     "id",
-  //     "title",
-  //     "date",
-  //     "_links",
-  //     "excerpt",
-  //     "categories",
-  //   ];
-  //   return await axios
-  //     .get(`${baseUrl}wp/v2/search`, {
-  //       params: {
-  //         page: 1,
-  //         _fields: `${infoKeyList.join(",")}`,
-  //         _embed: "wp:featuredmedia",
-  //         ...param,
-  //       },
-  //     })
-  //     .then(function (response) {
-  //       return response.data;
-  //     })
-  //     .catch(function (error) {
-  //       errorReport({ error, wpUrl });
-  //       throw new Error("Error fetching Posts");
-  //     });
-  // };
+  const getSearch = async (param) => {
+    const infoKeyList = [
+      "id",
+      "title",
+      "date",
+      "_links",
+    ];
+    return await axios
+      .get(`${baseUrl}wp/v2/search`, {
+        params: {
+          page: 1,
+          _fields: `${infoKeyList.join(",")}`,
+          ...param,
+        },
+      })
+      .then(function (response) {
+        return response.data;
+      })
+      .catch(function (error) {
+        errorReport({ error, wpUrl });
+        throw new Error("Error fetching Posts");
+      });
+  };
 
   const getPostDetail = async (id) => {
     const infoKeyList = [
@@ -153,7 +149,7 @@ function wpScan({ wpUrl, api_base_path = "/?rest_route=/" }) {
         throw new Error("Error fetching Posts");
       });
   };
-  return { getCategory, getInfo, getPost, getPostDetail };
+  return { getCategory, getInfo, getPost, getPostDetail, getSearch };
 }
 
 export default wpScan;
@@ -183,10 +179,12 @@ function errorReport({ error, wpUrl }) {
 }
 
 export const findImage = (p, baseUrl) => {
-
-  var img = p?._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes?.medium?.source_url
-      || p?._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes?.medium_large?.source_url
-      || p?._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes?.full?.source_url;
-  return img && (img.startsWith('http') ? img : `${baseUrl}${img}`)
-
-}
+  var img =
+    p?._embedded?.["wp:featuredmedia"]?.[0]?.media_details?.sizes?.medium_large
+      ?.source_url ||
+    p?._embedded?.["wp:featuredmedia"]?.[0]?.media_details?.sizes?.medium
+      ?.source_url ||
+    p?._embedded?.["wp:featuredmedia"]?.[0]?.media_details?.sizes?.full
+      ?.source_url;
+  return img && (img.startsWith("http") ? img : `${baseUrl}${img}`);
+};

@@ -128,3 +128,9 @@ export function useScrollDirection() {
   }, []);
   return { direction };
 }
+export function cleanHtmlTags(htmlString) {
+  // Regular expression to match HTML tags
+  const regex = /<[^>]+>/g;
+  // Remove HTML tags from the string
+  return htmlString.replace(regex, "");
+}
