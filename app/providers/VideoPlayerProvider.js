@@ -21,10 +21,10 @@ import { Video, ResizeMode } from "expo-av";
 import { TouchableHighlight } from "react-native-gesture-handler";
 // import Icon from "react-native-vector-icons/Ionicons";
 import Icon from "react-native-vector-icons/Ionicons";
-import { IconButton } from "react-native-paper";
 import * as FileSystem from "expo-file-system";
 import { shareAsync } from "expo-sharing";
 import { StatusBar } from "expo-status-bar";
+import IconButton from "../UI/IconButton";
 // Ionicons
 const VideoPlayerContext = createContext();
 export const VideoPlayerProvider = ({ children }) => {
@@ -154,11 +154,11 @@ export const VideoPlayerProvider = ({ children }) => {
             <ScrollView>
               <StatusBar style="light" />
               <Text>{playVideo?.title}</Text>
-              <IconButton
-                icon={"content-save"}
+              {/* <IconButton
+                name={"content-save"}
                 size={24}
                 onPress={() => downloadFromUrl(playVideo.src)}
-              />
+              /> */}
             </ScrollView>
           ) : (
             <View style={styles.flex}>
@@ -173,7 +173,7 @@ export const VideoPlayerProvider = ({ children }) => {
                   <ActivityIndicator />
                 ) : (
                   <IconButton
-                    icon={playerStatus.isPlaying ? "pause" : "play"}
+                    name={playerStatus.isPlaying ? "pause" : "play"}
                     size={24}
                     onPress={play}
                   />
@@ -181,7 +181,7 @@ export const VideoPlayerProvider = ({ children }) => {
               </View>
               <View style={styles.child}>
                 <IconButton
-                  icon={"close"}
+                  name={"close"}
                   size={24}
                   onPress={() => setPlayVideo(false)}
                 />

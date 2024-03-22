@@ -17,7 +17,7 @@ import { API_ROUTES } from "../routes";
 import { useApi } from "../hooks/api";
 import { StatusBar } from "expo-status-bar";
 import GeneralContext from "../providers/GeneralProviter";
-import Icon from "react-native-vector-icons/Ionicons";
+import Icon from "react-native-vector-icons/Feather";
 import wpScan, { findImage } from "../utils/wpScan";
 import RenderHTML, {
   HTMLContentModel,
@@ -29,9 +29,10 @@ import RenderHTML, {
 } from "react-native-render-html";
 import HTMLView from "react-native-htmlview";
 import useVideoPlayer from "../providers/VideoPlayerProvider";
-import { Avatar, Card, IconButton } from "react-native-paper";
 import { WebView } from "react-native-webview";
 import * as WebBrowser from "expo-web-browser";
+import Card from "../UI/Card";
+import IconButton from "../UI/IconButton";
 // import Video from "react-native-video";
 
 const window = Dimensions.get("window");
@@ -175,6 +176,13 @@ const PostScreen = ({ route, navigation }) => {
       }
       navigation.setOptions({
         title,
+        headerLeft: () => (
+          <IconButton
+            onPress={() => navigation.goBack()}
+            size={26}
+            name={"arrow-back"}
+          />
+        ),
       });
     }, [post]);
     const _handlePressButtonAsync = async () => {
@@ -206,11 +214,11 @@ const PostScreen = ({ route, navigation }) => {
             // </TRenderEngineProvider>
           )}
           <Card onPress={_handlePressButtonAsync}>
-            <Card.Cover source={{ uri: img }} />
+            {/* <Card.Cover source={{ uri: img }} /> */}
             <Card.Title
               title={website.name}
               subtitle={website.url}
-              right={(props) => <IconButton icon="web" />}
+              right={(props) => <Icon size={26} name="external-link" />}
             />
           </Card>
         </View>

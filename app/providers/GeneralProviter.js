@@ -5,12 +5,20 @@ import { API_ROUTES } from "../routes";
 const GeneralContext = createContext();
 
 export const GeneralProviter = ({ children }) => {
-  const { data: websites, loading: websitesLoading } = useApi({
+  const {
+    data: websites,
+    loading: websitesLoading,
+    refresh: refreshWebsites,
+  } = useApi({
     // url: "https://api.heinsoe.com",
     url: API_ROUTES.WEBSITE,
     cacheKey: "websites",
   });
-  const { data: category, loading: categoryLoading } = useApi({
+  const {
+    data: category,
+    loading: categoryLoading,
+    refresh: refreshCategory,
+  } = useApi({
     // url: "https://api.heinsoe.com",
     url: API_ROUTES.CATEGORY,
     cacheKey: "category",
@@ -18,7 +26,14 @@ export const GeneralProviter = ({ children }) => {
 
   return (
     <GeneralContext.Provider
-      value={{ websites, websitesLoading, category, categoryLoading }}
+      value={{
+        websites,
+        websitesLoading,
+        refreshWebsites,
+        category,
+        categoryLoading,
+        refreshCategory,
+      }}
     >
       {children}
     </GeneralContext.Provider>

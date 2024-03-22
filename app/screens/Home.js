@@ -12,14 +12,16 @@ import {
   NativeModules,
   Image,
   TextInput,
+  RefreshControl,
 } from "react-native";
-import { Badge, Card, Chip } from "react-native-paper";
 import { API_ROUTES } from "../routes";
 import { useApi } from "../hooks/api";
 import { StatusBar } from "expo-status-bar";
 import GeneralContext from "../providers/GeneralProviter";
 import MyStatusBar from "./../components/MyStatusBar";
 import _ from "lodash";
+import Card from "../UI/Card";
+import Chip from "../UI/Chip";
 
 const { StatusBarManager } = NativeModules;
 
@@ -27,6 +29,7 @@ const HomeScreen = ({ navigation }) => {
   const {
     websites: w,
     websitesLoading,
+    refreshWebsites,
     category,
     categoryLoading,
   } = useContext(GeneralContext);
@@ -38,10 +41,12 @@ const HomeScreen = ({ navigation }) => {
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      const filtered = w.filter((item) =>
-        item.name.toLowerCase().includes(searchWord.toLowerCase())
-      );
-      setFilteredResults(filtered);
+      if (w) {
+        const filtered = w?.filter((item) =>
+          item.name.toLowerCase().includes(searchWord.toLowerCase())
+        );
+        setFilteredResults(filtered);
+      }
     }, 200); // Adjust the debounce delay as needed
 
     return () => clearTimeout(delayDebounceFn);
@@ -54,7 +59,7 @@ const HomeScreen = ({ navigation }) => {
           top: 48,
           right: 16,
           left: 16,
-          zIndex: 10,
+          zIndex: 1,
           borderRadius: 40,
           padding: 8,
           paddingRight: 16,
@@ -64,10 +69,18 @@ const HomeScreen = ({ navigation }) => {
       >
         <TextInput placeholder="Search Channel" onChangeText={setSearchWord} />
       </Card>
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={websitesLoading}
+            onRefresh={refreshWebsites}
+          />
+        }
+        showsVerticalScrollIndicator={false}
+      >
         <MyStatusBar autoHeight />
         <View style={{ height: 80 }} />
-        <Text>Popular</Text>
+        <View style={{ alignItems: "center" }}><Text>Popular</Text></View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {websites?.map((w) => {
             const is18 = w.is18Plus == "yes";

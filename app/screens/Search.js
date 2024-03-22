@@ -14,11 +14,13 @@ import { useApi } from "../hooks/api";
 import { StatusBar } from "expo-status-bar";
 import GeneralContext from "../providers/GeneralProviter";
 import wpScan, { findImage } from "../utils/wpScan";
-import { Appbar, Card, IconButton } from "react-native-paper";
 import WebView from "react-native-webview";
 import HTMLView from "react-native-htmlview";
 import { cleanHtmlTags } from "../utils/function";
 import MyStatusBar from "../components/MyStatusBar";
+import Icon from "react-native-vector-icons/Ionicons";
+import Card from "../UI/Card";
+import IconButton from "../UI/IconButton";
 
 const styles = StyleSheet.create({
   container: {
@@ -43,7 +45,7 @@ const SearchScreen = ({ route, navigation }) => {
       headerRight: () => (
         <IconButton
           onPress={() => navigation.navigate("Search", { website })}
-          icon={"magnify"}
+          name={"search"}
         />
       ),
     });
@@ -105,7 +107,7 @@ const SearchScreen = ({ route, navigation }) => {
           }}
         >
           <IconButton
-            icon={"arrow-left"}
+            name={"arrow-back"}
             size={26}
             onPress={() => {
               navigation.goBack();

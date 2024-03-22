@@ -13,11 +13,13 @@ import { useApi } from "../hooks/api";
 import { StatusBar } from "expo-status-bar";
 import GeneralContext from "../providers/GeneralProviter";
 import wpScan, { findImage } from "../utils/wpScan";
-import { Appbar, Card, IconButton } from "react-native-paper";
 import WebView from "react-native-webview";
 import HTMLView from "react-native-htmlview";
 import { cleanHtmlTags } from "../utils/function";
 import { ago } from "../utils/time";
+import Icon from "react-native-vector-icons/Ionicons";
+import Card from "../UI/Card";
+import IconButton from "../UI/IconButton";
 
 const styles = StyleSheet.create({
   container: {
@@ -41,7 +43,15 @@ const ChannelScreen = ({ route, navigation }) => {
       headerRight: () => (
         <IconButton
           onPress={() => navigation.navigate("Search", { website })}
-          icon={"magnify"}
+          size={26}
+          name={"search"}
+        />
+      ),
+      headerLeft: () => (
+        <IconButton
+          onPress={() => navigation.goBack()}
+          size={26}
+          name={"arrow-back"}
         />
       ),
     });
@@ -120,6 +130,7 @@ const ChannelScreen = ({ route, navigation }) => {
 
     return (
       <FlatList
+        showsVerticalScrollIndicator={false}
         numColumns={2}
         horizontal={false}
         style={styles.container}

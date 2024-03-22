@@ -1,0 +1,11 @@
+build as android
+eas build -p android --profile preview
+
+
+log in adb with real device
+adb logcat *:S ReactNative:V ReactNativeJS:V
+
+
+local build and
+cd android
+./gradlew assembleRelease

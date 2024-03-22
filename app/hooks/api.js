@@ -6,14 +6,14 @@ const CACHE_PREFIX = "your_cache_prefix_here";
 
 export function useApi({
   url,
-  theParams = null,
+  params: p = null,
   cacheKey,
   expirationTime = 3600,
 }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [params, setParams] = useState(theParams);
+  const [params, setParams] = useState(p);
 
   const getCachedData = async () => {
     try {
@@ -39,30 +39,30 @@ export function useApi({
       if (!fresh) {
         const cachedData = await getCachedData();
         if (cachedData !== null) {
-          console.log('cache Data found');
+          console.log("cache Data found");
           setData(cachedData);
           setLoading(false);
           setError(false);
           return; // Exit early if data is found in cache
         }
       }
-      console.log('refreshing');
-      const response = await axios.get(url, {
+      console.log("refreshing");
+      const response = await fetch(url, {
         params,
         withCredentials: true,
       });
       setLoading(false);
       setError(false);
-      console.log("loaded")
-      if (response.status === 204) {
-        setData(null);
-      } else {
-        setData(response.data);
+      console.log("loaded");
+      const json = await response.json();
+
+      if (json) {
+        setData(json);
         // Cache the fetched data
         await AsyncStorage.setItem(
           CACHE_PREFIX + cacheKey,
           JSON.stringify({
-            data: response.data,
+            data: json,
             timestamp: new Date().getTime(),
           })
         );
