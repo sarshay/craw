@@ -2,12 +2,16 @@ import React from "react";
 import { useColor } from "./color";
 import { Pressable, Text, TouchableNativeFeedback, View } from "react-native";
 
-function Chip({ children, avatar, onPress, style }) {
-  const { primaryColor, lightColor } = useColor();
+function Chip({ children, avatar, onPress, style, mode }) {
+  const { primaryColor, lightColor, dangerColor, warnningColor } = useColor();
+  const color = {
+    danger: dangerColor(0.7)[0],
+    warnning: warnningColor(0.7)[0],
+  };
   return (
     <View
       style={{
-        backgroundColor: primaryColor(0.7)[0],
+        backgroundColor: lightColor()[0],
         borderRadius: 50,
         overflow: "hidden",
         ...style,
@@ -18,12 +22,27 @@ function Chip({ children, avatar, onPress, style }) {
           style={{
             flex: 1,
             padding: 4,
-            paddingStart: 10,
+            height: 28,
+            paddingStart: avatar ? 4 : 8,
             paddingEnd: 10,
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
-          {avatar && <View>{avatar}</View>}
-          <Text style={{ color: lightColor()[0] }}> {children}</Text>
+          {avatar && (
+            <View
+              style={{
+                height: 20,
+                width: 20,
+                borderRadius: 40,
+                overflow: "hidden",
+              }}
+            >
+              {avatar}
+            </View>
+          )}
+          <Text style={mode && { color: color[mode] }}> {children}</Text>
         </View>
       </TouchableNativeFeedback>
     </View>

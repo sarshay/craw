@@ -1,6 +1,4 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { useApi } from "../hooks/api";
-import { API_ROUTES } from "../routes";
 import {
   View,
   StyleSheet,

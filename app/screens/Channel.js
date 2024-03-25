@@ -4,25 +4,22 @@ import {
   Button,
   FlatList,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
 } from "react-native";
-import { API_ROUTES } from "../routes";
-import { useApi } from "../hooks/api";
-import { StatusBar } from "expo-status-bar";
 import GeneralContext from "../providers/GeneralProviter";
 import wpScan, { findImage } from "../utils/wpScan";
-import WebView from "react-native-webview";
-import HTMLView from "react-native-htmlview";
 import { cleanHtmlTags } from "../utils/function";
 import { ago } from "../utils/time";
-import Icon from "react-native-vector-icons/Ionicons";
 import Card from "../UI/Card";
 import IconButton from "../UI/IconButton";
+import { useColor } from "../UI/color";
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     marginTop: 0,
     margin: 6,
   },
@@ -56,6 +53,8 @@ const ChannelScreen = ({ route, navigation }) => {
       ),
     });
   }, [navigation]);
+
+  const { bgColor, primaryColor } = useColor();
   if (website) {
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
@@ -85,11 +84,13 @@ const ChannelScreen = ({ route, navigation }) => {
           setCategoryLoading(true);
           wp.getCategory()
             .then((data) => {
+              // console.log(data);
               setCategory(data);
             })
             .catch((error) => {
               // messageAPi.error(error?.message);
               // setWpError(error?.message)
+              console.log(error);
             })
             .finally(() => {
               setCategoryLoading(false);
@@ -114,7 +115,7 @@ const ChannelScreen = ({ route, navigation }) => {
         })
         .catch((error) => {
           setHasMore(false);
-          console.error({ error });
+          // console.error({ error });
           //   messageAPi.error(error?.message);
           // setWpError(error?.message)
         })
@@ -129,57 +130,86 @@ const ChannelScreen = ({ route, navigation }) => {
     }, [website, category_id, searchWord]);
 
     return (
-      <FlatList
-        showsVerticalScrollIndicator={false}
-        numColumns={2}
-        horizontal={false}
-        style={styles.container}
-        //   refreshing={loading}
-        //   onRefresh={() => {}}
-        data={posts}
-        onEndReached={loadMore}
-        onEndReachedThreshold={0.8}
-        ListFooterComponent={posts && <ActivityIndicator />}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => {
-          const img = findImage(item, website?.url);
-          return (
-            <Card
-              style={styles.item}
-              onPress={() => navigation.navigate("Post", { website, ...item })}
-            >
-              {img && <Card.Cover source={{ uri: img }} />}
-              {/* <Card.Title
+      <>
+        <View>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={{ backgroundColor: bgColor()[0] }}
+          >
+            {category?.map((c) => (
+              <Pressable
+                key={c.id}
+                onPress={() => setcategory_id(c.id)}
+                style={{
+                  padding: 8,
+                  ...(category_id == c.id
+                    ? { backgroundColor: primaryColor(0.2)[0] }
+                    : {}),
+                }}
+              >
+                <Text>{c.name}</Text>
+              </Pressable>
+            ))}
+          </ScrollView>
+        </View>
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          numColumns={2}
+          horizontal={false}
+          style={styles.container}
+          //   refreshing={loading}
+          //   onRefresh={() => {}}
+          data={posts}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.8}
+          ListFooterComponent={posts && hasMore && <ActivityIndicator />}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => {
+            const img = findImage(item, website?.url);
+            return (
+              <Card
+                style={styles.item}
+                onPress={() =>
+                  navigation.navigate("Post", { website, ...item })
+                }
+              >
+                {img && <Card.Cover source={{ uri: img }} />}
+                {/* <Card.Title
                 title={item.title?.rendered}
                 subtitle={item.excerpt?.rendered}
                 // left={LeftContent}
               /> */}
-              <Card.Content>
-                {/* <HTMLView
+                <Card.Content>
+                  {/* <HTMLView
                   value={item.title?.rendered}
                   stylesheet={!img ? { fontSize: 24 } : {}}
                   // renderNode={renderNode}
                   addLineBreaks={true}
                   lineBreak={"\n"}
                 /> */}
-                <Text>{ago(item.date)}</Text>
-                <Text variant="titleLarge" style={!img ? { fontSize: 24 } : {}}>
-                  {cleanHtmlTags(item.title?.rendered)}
-                </Text>
-                {!img && (
-                  <Text variant="bodyMedium" numberOfLines={5}>
-                    {cleanHtmlTags(item.excerpt?.rendered)}
+                  <Text>{ago(item.date)}</Text>
+                  <Text
+                    variant="titleLarge"
+                    style={!img ? { fontSize: 24 } : {}}
+                  >
+                    {cleanHtmlTags(item.title?.rendered)}
                   </Text>
-                )}
-              </Card.Content>
-              {/* <Card.Actions>
+                  {!img && (
+                    <Text variant="bodyMedium" numberOfLines={5}>
+                      {cleanHtmlTags(item.excerpt?.rendered)}
+                    </Text>
+                  )}
+                </Card.Content>
+                {/* <Card.Actions>
                   <Button>Cancel</Button>
                   <Button>Ok</Button>
                 </Card.Actions> */}
-            </Card>
-          );
-        }}
-      />
+              </Card>
+            );
+          }}
+        />
+      </>
     );
   } else {
     return <Text>404</Text>;

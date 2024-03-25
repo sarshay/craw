@@ -4,7 +4,7 @@ module.exports = {
   name: myValue,
   slug: "crow",
   orientation: "portrait",
-  icon: process.env.EXPO_PUBLIC_API_URL || "./assets/icon.png",
+  icon: "./assets/icon.png",
   userInterfaceStyle: "light",
   version: process.env.MY_CUSTOM_PROJECT_VERSION || "1.0.0",
   splash: {

@@ -1,57 +1,8 @@
 import axios from "axios";
-import { API_ROUTES } from "../routes";
+import { API_ROUTES } from "../constant";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 //https://burmese.dvb.no/wp-json/wp/v2/posts?page=1&_fields=id,title,date,_links,excerpt,categories&_embed=wp:featuredmedia
 
-const CACHE_PREFIX = "wp_data";
-const getCachedData = async ({ cacheKey, expirationTime = 3600 }) => {
-  try {
-    const cachedData = await AsyncStorage.getItem(CACHE_PREFIX + cacheKey);
-
-    if (cachedData !== null) {
-      const parsedData = JSON.parse(cachedData);
-      const currentTime = new Date().getTime();
-
-      if (currentTime - parsedData.timestamp < expirationTime * 1000) {
-        return parsedData.data;
-      } else {
-        // throw new Error("cache Expired");
-      }
-    }
-  } catch (error) {
-    // throw new Error(error);
-  }
-  return null;
-};
-const myFetch = async ({ url, params, cacheKey, fresh = false }) => {
-  try {
-    if (!fresh) {
-      const cachedData = await getCachedData();
-      if (cachedData !== null) {
-        console.log("cache Data found");
-        return cachedData; // Exit early if data is found in cache
-      }
-    }
-    const response = await fetch(url, {
-      params,
-      withCredentials: true,
-    });
-    const json = await response.json();
-
-    if (json) {
-      await AsyncStorage.setItem(
-        CACHE_PREFIX + cacheKey,
-        JSON.stringify({
-          data: json,
-          timestamp: new Date().getTime(),
-        })
-      );
-      return json;
-    }
-  } catch (error) {
-    throw new Error(error);
-  }
-};
 
 function wpScan({ wpUrl, api_base_path = "/?rest_route=/" }) {
   // const baseUrl = `${wpUrl}/?rest_route=/`;
@@ -69,19 +20,17 @@ function wpScan({ wpUrl, api_base_path = "/?rest_route=/" }) {
     // },
   };
   const getCategory = async () => {
-    // return await axios
-    //   .get(`${baseUrl}wp/v2/categories`, {
-    //     ...defaultHeader,
-    //   })
-    //   .then(function (response) {
-    //     return response.data;
-    //   })
-    //   .catch(function (error) {
-    //     throw new Error("Error fetching Category");
-    //   });
-    return await myFetch({
-      url: `${baseUrl}wp/v2/categories`,
-    });
+    console.log(`${baseUrl}wp/v2/categories`)
+    return await axios
+      .get(`${baseUrl}wp/v2/categories`, {
+        ...defaultHeader,
+      })
+      .then(function (response) {
+        return response.data;
+      })
+      .catch(function (error) {
+        throw new Error("Error fetching Category");
+      });
   };
   const getInfo = async () => {
     const infoKeyList = [
@@ -152,7 +101,6 @@ function wpScan({ wpUrl, api_base_path = "/?rest_route=/" }) {
         errorReport({ error, wpUrl });
         throw new Error("Error fetching Posts");
       });
-    
   };
 
   const getSearch = async (param) => {
@@ -184,14 +132,16 @@ function wpScan({ wpUrl, api_base_path = "/?rest_route=/" }) {
       "categories",
       "content",
     ];
+    const params = {
+      page: 1,
+      _fields: `${infoKeyList.join(",")}`,
+      _embed: "wp:featuredmedia",
+    };
+
     return await axios
       .get(`${baseUrl}wp/v2/posts/${id}`, {
         ...defaultHeader,
-        params: {
-          page: 1,
-          _fields: `${infoKeyList.join(",")}`,
-          _embed: "wp:featuredmedia",
-        },
+        params,
       })
       .then(function (response) {
         return response.data;

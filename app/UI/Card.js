@@ -46,13 +46,17 @@ export default Card;
 Card.Content = ({ children, style }) => (
   <View style={{ padding: 16, flex: 1, ...style }}>{children}</View>
 );
-Card.Cover = ({ source }) => (
-  <View>
-    <Image
-      style={{ borderRadius: 16, flex: 1, height: 200, width: "100%" }}
-      source={source}
-    />
-  </View>
+Card.Cover = ({ source, style }) => (
+  <Image
+    style={{
+      borderRadius: 16,
+      flex: 1,
+      height: 200,
+      width: "100%",
+      ...style,
+    }}
+    source={source}
+  />
 );
 Card.Title = ({ title, subtitle, right, left, style }) => (
   <View

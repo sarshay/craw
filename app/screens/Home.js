@@ -13,8 +13,9 @@ import {
   Image,
   TextInput,
   RefreshControl,
+  VirtualizedList,
 } from "react-native";
-import { API_ROUTES } from "../routes";
+import { API_ROUTES } from "../constant";
 import { useApi } from "../hooks/api";
 import { StatusBar } from "expo-status-bar";
 import GeneralContext from "../providers/GeneralProviter";
@@ -22,6 +23,8 @@ import MyStatusBar from "./../components/MyStatusBar";
 import _ from "lodash";
 import Card from "../UI/Card";
 import Chip from "../UI/Chip";
+import appConfig from "../app.config";
+import Channel from "../components/Channel";
 
 const { StatusBarManager } = NativeModules;
 
@@ -48,7 +51,6 @@ const HomeScreen = ({ navigation }) => {
         setFilteredResults(filtered);
       }
     }, 200); // Adjust the debounce delay as needed
-
     return () => clearTimeout(delayDebounceFn);
   }, [searchWord, w]);
   return (
@@ -80,26 +82,23 @@ const HomeScreen = ({ navigation }) => {
       >
         <MyStatusBar autoHeight />
         <View style={{ height: 80 }} />
-        <View style={{ alignItems: "center" }}><Text>Popular</Text></View>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        <View style={{ alignItems: "center" }}>
+          <Text>Popular</Text>
+        </View>
+        <ScrollView
+          style={{ flex: 1 }}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+        >
           {websites?.map((w) => {
-            const is18 = w.is18Plus == "yes";
             return (
-              <Chip
-                key={w.id}
-                rippleColor={is18 && "#ff0000"}
-                style={{
-                  margin: 8,
-                  ...(is18 && { backgroundColor: "#ff000022" }),
-                }}
-                avatar={
-                  w.site_icon_url && <Image source={{ uri: w.site_icon_url }} />
-                }
-                onPress={() => goToChannelScreen(w.id)}
-              >
-                {w.name}
-                {is18 && "(18+)"}
-              </Chip>
+              <View key={w.id} style={{ margin: 8, width: 180 }}>
+                <Channel.Card
+                  key={w.id}
+                  {...w}
+                  onPress={() => goToChannelScreen(w.id)}
+                />
+              </View>
             );
           })}
         </ScrollView>
@@ -112,25 +111,12 @@ const HomeScreen = ({ navigation }) => {
               {w
                 ?.filter((a) => a.category_ids?.split(",").includes(item.id))
                 .map((w) => {
-                  const is18 = w.is18Plus == "yes";
                   return (
-                    <Chip
+                    <Channel
                       key={w.id}
-                      rippleColor={is18 && "#ff0000"}
-                      style={{
-                        margin: 8,
-                        ...(is18 && { backgroundColor: "#ff000022" }),
-                      }}
-                      avatar={
-                        w.site_icon_url && (
-                          <Image source={{ uri: w.site_icon_url }} />
-                        )
-                      }
+                      {...w}
                       onPress={() => goToChannelScreen(w.id)}
-                    >
-                      {w.name}
-                      {is18 && "(18+)"}
-                    </Chip>
+                    />
                   );
                 })}
             </View>

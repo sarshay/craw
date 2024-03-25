@@ -9,10 +9,6 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { API_ROUTES } from "../routes";
-import { useApi } from "../hooks/api";
-import { StatusBar } from "expo-status-bar";
-import GeneralContext from "../providers/GeneralProviter";
 import wpScan, { findImage } from "../utils/wpScan";
 import WebView from "react-native-webview";
 import HTMLView from "react-native-htmlview";

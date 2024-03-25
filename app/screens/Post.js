@@ -12,27 +12,23 @@ import {
   View,
   Dimensions,
   useWindowDimensions,
+  BackHandler,
 } from "react-native";
-import { API_ROUTES } from "../routes";
-import { useApi } from "../hooks/api";
-import { StatusBar } from "expo-status-bar";
-import GeneralContext from "../providers/GeneralProviter";
 import Icon from "react-native-vector-icons/Feather";
 import wpScan, { findImage } from "../utils/wpScan";
-import RenderHTML, {
-  HTMLContentModel,
-  HTMLElementModel,
-  RenderHTMLConfigProvider,
-  RenderHTMLSource,
-  TRenderEngineProvider,
-  defaultHTMLElementModels,
-} from "react-native-render-html";
 import HTMLView from "react-native-htmlview";
 import useVideoPlayer from "../providers/VideoPlayerProvider";
 import { WebView } from "react-native-webview";
 import * as WebBrowser from "expo-web-browser";
 import Card from "../UI/Card";
 import IconButton from "../UI/IconButton";
+import * as VideoThumbnails from "expo-video-thumbnails";
+import RenderHTML, {
+  RenderHTMLConfigProvider,
+  TRenderEngineProvider,
+} from "react-native-render-html";
+import { cleanHtmlTags } from "../utils/function";
+import TheImageViewer from "../components/ImageViewer";
 // import Video from "react-native-video";
 
 const window = Dimensions.get("window");
@@ -40,7 +36,8 @@ const window = Dimensions.get("window");
 const PostScreen = ({ route, navigation }) => {
   // const { websites } = useContext(GeneralContext);
   const { id, website } = route.params;
-  // const website = websites.find((a) => a.id == id);
+  const [images, setImages] = useState([]);
+  const [openImage, setOpenImage] = useState(null);
 
   if (website) {
     const [loading, setLoadig] = useState(false);
@@ -71,8 +68,6 @@ const PostScreen = ({ route, navigation }) => {
         fetchData();
       }
     }, [website]);
-    const { playVideo, setPlayVideo } = useVideoPlayer();
-    const img = findImage(post, website?.url);
     const renderNode = (node, index, siblings, parent, defaultRenderer) => {
       if (node.name === "video") {
         const sourceNode = node.children.find(
@@ -81,63 +76,33 @@ const PostScreen = ({ route, navigation }) => {
         if (sourceNode && sourceNode.attribs && sourceNode.attribs.src) {
           const src = sourceNode.attribs.src;
 
-          return (
-            <View
-              key={index}
-              style={{
-                backgroundColor: "#888888",
-                height: window.width / 1.6,
-                width: window.width - 32,
-                flex: 1,
-                borderRadius: 16,
-                overflow: "hidden",
-              }}
-            >
-              <Image
-                source={{ uri: img }}
-                style={{
-                  height: "100%",
-                  width: "100%",
-                }}
-              />
-
-              <Pressable
-                style={{
-                  // height: window.width / 2,
-                  // width: window.width - 16,
-                  position: "absolute",
-                  width: "100%",
-                  height: "100%",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  backgroundColor: "#22222288",
-                }}
-                onPress={() =>
-                  setPlayVideo({
-                    src: src,
-                    posterSource: img,
-                    title: post?.title?.rendered,
-                  })
-                }
-              >
-                <Icon name="play" size={60} style={{ color: "red" }} />
-              </Pressable>
-            </View>
-          );
+          return <TheVideo key={index} src={src} post={post} />;
         }
       } else if (node.name == "iframe") {
         const a = node.attribs;
-        const iframeHtml = `<iframe src="${a.src}" height="100%" width="100%"></iframe>`;
+        const iframeHtml = `<html>
+        <head>
+          <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,user-scalable=no"/>
+          <style>
+          body, html { margin: 0; padding: 0; }
+          iframe { width: 100%; height: 100%; border: none; } /* Remove border from iframe */
+        </style>
+        </head>
+        <body style="margin: 0; padding: 0;">
+        <iframe src="${a.src}" height="100%" width="100%" frameborder="0"></iframe>
+        </body>
+        </html>`;
         return (
           <View
             key={index}
             style={{
-              width: Number(window.width),
+              width: Number(window.width - 32),
               height: Number(window.width / 1.4),
               backgroundColor: "#777777d",
             }}
           >
             <WebView
+              userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
               source={{
                 html: iframeHtml,
                 // uri: a.src,
@@ -147,24 +112,27 @@ const PostScreen = ({ route, navigation }) => {
         );
       } else if (node.name == "img") {
         const a = node.attribs;
-        // console.log(a.src);
+        setImages((img) => [...img, { url: a.src }]);
         return (
-          <View key={index}>
-            <Image
-              source={{ uri: a.src }}
-              style={{
-                height: window.width / 1.4,
-                width: window.width - 32,
-              }}
-            />
-          </View>
+          <Pressable key={index} onPress={() => setOpenImage(a.src)}>
+            <TheImage a={a} />
+          </Pressable>
         );
       } else if (node.name == "p") {
-        return (
-          <View key={index} style={{ margin: 0 }}>
-            {defaultRenderer(node.children, parent)}
-          </View>
-        );
+        if (node.data) {
+          const data = node.data?.trim();
+          return (
+            <View key={index} style={{ backgroundColor: "green" }}>
+              <Text>{data}</Text>
+            </View>
+          );
+        } else {
+          return (
+            <View key={index}>{defaultRenderer(node.children, parent)}</View>
+          );
+        }
+      } else if (node.name == "br") {
+        return <View key={index} />;
       } else {
         return;
       } // Return undefined for other nodes to use the default rendering
@@ -189,40 +157,50 @@ const PostScreen = ({ route, navigation }) => {
       let result = await WebBrowser.openBrowserAsync(`${website.url}?p=${id}`);
       // setResult(result);
     };
+
     return (
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={{ padding: 16 }}>
-          <Text style={{ fontSize: 24, marginBottom: 32 }}>
-            {post?.title?.rendered}
-          </Text>
-          {post && (
-            <HTMLView
-              value={post?.content?.rendered}
-              stylesheet={{ margin: 16 }}
-              renderNode={renderNode}
-              // addLineBreaks={true}
-              // lineBreak={"\n"}
-            />
-            // <TRenderEngineProvider>
-            //   <RenderHTMLConfigProvider>
-            //     <RenderHTML
-            //       contentWidth={window.width}
-            //       // customHTMLElementModels={customHTMLElementModels}
-            //       source={{ html: post?.content?.rendered }}
-            //     />
-            //   </RenderHTMLConfigProvider>
-            // </TRenderEngineProvider>
-          )}
-          <Card onPress={_handlePressButtonAsync}>
-            {/* <Card.Cover source={{ uri: img }} /> */}
-            <Card.Title
-              title={website.name}
-              subtitle={website.url}
-              right={(props) => <Icon size={26} name="external-link" />}
-            />
-          </Card>
-        </View>
-      </ScrollView>
+      <React.Fragment>
+        <TheImageViewer
+          images={images}
+          openImage={openImage}
+          setOpenImage={setOpenImage}
+        />
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View style={{ margin: 16 }}>
+            <Text style={{ fontSize: 24, marginBottom: 32 }}>
+              {post?.title?.rendered}
+            </Text>
+            {post && (
+              <HTMLView
+                value={post?.content?.rendered}
+                renderNode={renderNode}
+                // addLineBreaks={true}
+                // lineBreak={"\n"}
+              />
+              // <TRenderEngineProvider>
+              //   <RenderHTMLConfigProvider>
+              //     <RenderHTML
+              //       contentWidth={window.width}
+              //       // renderersProps={renderNode}
+              //       // customHTMLElementModels={customHTMLElementModels}
+              //       source={{ html: post?.content?.rendered }}
+              //     />
+              //   </RenderHTMLConfigProvider>
+              // </TRenderEngineProvider>
+            )}
+            {!loading && (
+              <Card onPress={_handlePressButtonAsync}>
+                {/* <Card.Cover source={{ uri: img }} /> */}
+                <Card.Title
+                  title={website.name}
+                  subtitle={website.url}
+                  right={(props) => <Icon size={26} name="external-link" />}
+                />
+              </Card>
+            )}
+          </View>
+        </ScrollView>
+      </React.Fragment>
     );
   } else {
     return <Text>404</Text>;
@@ -230,3 +208,91 @@ const PostScreen = ({ route, navigation }) => {
 };
 
 export default PostScreen;
+
+const TheImage = ({ a }) => {
+  // const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
+  const windowWidth = useWindowDimensions().width; // Get window width using useWindowDimensions hook
+
+  // // Check if image source is valid
+  // if (!a || !a.src) {
+  //   return null; // Return null or some placeholder component if image source is missing
+  // }
+  // Image.getSize(a.src, (width, height) => {
+  //   setImageSize({ width, height });
+  // });
+  // const aspectRatio = imageSize.width / imageSize.height;
+  // const height = parseFloat((windowWidth / aspectRatio).toFixed(0));
+  return (
+    <View style={{ flex: 1 }}>
+      <Image
+        source={{ uri: a.src }}
+        style={{
+          flex: 1,
+          margin: 0,
+          marginLeft: -16,
+          marginRight: -16,
+          width: windowWidth,
+          height: windowWidth / 1.4,
+        }}
+        resizeMode="contain"
+      />
+    </View>
+  );
+};
+const TheVideo = ({ src, post }) => {
+  const [thumbnailUri, setThumbnailUri] = useState(null);
+  const { playVideo, setPlayVideo } = useVideoPlayer();
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const { uri } = await VideoThumbnails.getThumbnailAsync(src);
+        setThumbnailUri(uri);
+      } catch (error) {
+        console.error("Error getting thumbnail:", error);
+      }
+    })();
+  }, [src]);
+  return (
+    <View
+      style={{
+        backgroundColor: "#888888",
+        height: window.width / 1.6,
+        width: window.width - 32,
+        flex: 1,
+        borderRadius: 16,
+        overflow: "hidden",
+      }}
+    >
+      <Image
+        source={{ uri: thumbnailUri }}
+        style={{
+          height: "100%",
+          width: "100%",
+        }}
+      />
+
+      <Pressable
+        style={{
+          // height: window.width / 2,
+          // width: window.width - 16,
+          position: "absolute",
+          width: "100%",
+          height: "100%",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#22222288",
+        }}
+        onPress={() =>
+          setPlayVideo({
+            src: src,
+            posterSource: thumbnailUri,
+            title: cleanHtmlTags(post?.title?.rendered),
+          })
+        }
+      >
+        <Icon name="play" size={60} style={{ color: "white" }} />
+      </Pressable>
+    </View>
+  );
+};
