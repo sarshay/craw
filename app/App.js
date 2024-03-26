@@ -1,4 +1,4 @@
-import { StatusBar } from "expo-status-bar";
+import * as Linking from "expo-linking";
 import { StyleSheet, Text, View } from "react-native";
 import HomeScreen from "./screens/Home";
 import {
@@ -20,10 +20,45 @@ export default function App() {
       duration: 200,
     },
   };
+  // Linking.openURL('https://expo.dev');
+  const url = Linking.useURL();
+
+  const { hostname, path, queryParams } = Linking.parse(url);
+  console.log(
+    `Linked to app with hostname: ${hostname}, path: ${path} and data: ${JSON.stringify(
+      queryParams
+    )}`
+  );
+  const linking = {
+    prefixes: ["crow://", "https://himyanmar.online", "https://*.himyanmar.online"],
+    filter: (url) => !url.includes('+expo-auth-session'),
+    config: {
+      screens: {
+        Home: {
+          path: "home",
+        },
+        Channel: {
+          path: "channel/:id",
+          parse: {
+            id: (id) => `${id}`,
+          },
+        },
+        // Post: {
+        //   path: "post/:id",
+        //   parse: {
+        //     id: (id) => `${id}`,
+        //   },
+        // },
+      },
+    },
+  };
   return (
     <GeneralProviter>
       <VideoPlayerProvider>
-        <NavigationContainer>
+        <NavigationContainer
+          linking={linking}
+          fallback={<Text>Loading...</Text>}
+        >
           <Stack.Navigator
             initialRouteName="Home"
             screenOptions={{
@@ -44,10 +79,7 @@ export default function App() {
               //   hideWhenScrolling: true,
               // }}
             />
-            <Stack.Screen
-              name="Channel"
-              component={ChannelScreen}
-            />
+            <Stack.Screen name="Channel" component={ChannelScreen} />
             <Stack.Screen
               name="Post"
               options={{

@@ -17,6 +17,7 @@ module.exports = {
     supportsTablet: true,
   },
   expo: {
+    scheme: "crow",
     extra: {
       eas: {
         projectId: "d0d19f2d-6890-426e-8fac-b9615a4c76ac",
@@ -29,7 +30,21 @@ module.exports = {
         backgroundColor: "#ffffff",
       },
       package: "com.heinsoe.crow",
-      versionCode: 1,
+      versionCode: 1.3,
+      intentFilters: [
+        {
+          action: "VIEW",
+          autoVerify: true,
+          data: [
+            {
+              scheme: "https",
+              host: "*",
+              pathPrefix: "/records",
+            },
+          ],
+          category: ["BROWSABLE", "DEFAULT"],
+        },
+      ],
     },
   },
 };

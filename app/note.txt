@@ -9,9 +9,9 @@ adb logcat *:S ReactNative:V ReactNativeJS:V
 local build
 
 cd android
-./gradlew clean
+.\gradlew clean
 
 release
-./gradlew assembleDebug --stacktrace
+.\gradlew assembleDebug --stacktrace
 
-./gradlew assembleRelease
+.\gradlew assembleRelease

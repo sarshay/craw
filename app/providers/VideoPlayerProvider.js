@@ -12,6 +12,8 @@ import {
   Platform,
   ScrollView,
   NativeModules,
+  Animated,
+  PanResponder,
 } from "react-native";
 const { StatusBarManager } = NativeModules;
 
@@ -23,6 +25,7 @@ import * as FileSystem from "expo-file-system";
 import { shareAsync } from "expo-sharing";
 import { StatusBar } from "expo-status-bar";
 import IconButton from "../UI/IconButton";
+import { useColor } from "../UI/color";
 // Ionicons
 const VideoPlayerContext = createContext();
 export const VideoPlayerProvider = ({ children }) => {
@@ -108,6 +111,8 @@ export const VideoPlayerProvider = ({ children }) => {
       console.error("Error saving file:", error);
     }
   };
+  // Initial height when not expanded
+
   return (
     <VideoPlayerContext.Provider
       value={{
@@ -120,73 +125,84 @@ export const VideoPlayerProvider = ({ children }) => {
     >
       {children}
       {playVideo && (
-        <View style={playerOpen ? styles.container : styles.containerSmall}>
-          <Pressable
-            onPress={() => {
-              playerOpen ? setShowControl(!showControl) : setPlayerOpen(true);
-            }}
-          >
-            <Video
-              ref={video}
-              style={
-                playerOpen ? styles.videoContainer : styles.videoContainerSmall
-              }
-              source={{
-                uri: playVideo.src,
-              }}
-              useNativeControls={playerOpen ? showControl : false}
-              resizeMode={ResizeMode.CONTAIN}
-              onReadyForDisplay={() => {
-                play();
-                setLoading(false);
-              }}
-              showPoster={true}
-              usePoster={true}
-              posterSource={{ uri: playVideo?.posterSource }}
-              videoStyle={playerOpen ? styles.video : styles.videoSmall}
-              isLooping
-              onPlaybackStatusUpdate={(status) => setPlayerStatus(() => status)}
-            />
-          </Pressable>
-          {playerOpen ? (
-            <ScrollView>
-              <StatusBar style="light" />
-              <Text>{playVideo?.title}</Text>
-              {/* <IconButton
+        <>
+          <BottomSheet isOpen={playerOpen} setOpen={setPlayerOpen}>
+            <View style={playerOpen ? styles.container : styles.containerSmall}>
+              <Pressable
+                onPress={() => {
+                  playerOpen
+                    ? setShowControl(!showControl)
+                    : setPlayerOpen(true);
+                }}
+              >
+                <Video
+                  ref={video}
+                  style={
+                    playerOpen
+                      ? styles.videoContainer
+                      : styles.videoContainerSmall
+                  }
+                  source={{
+                    uri: playVideo.src,
+                  }}
+                  useNativeControls={playerOpen ? showControl : false}
+                  resizeMode={ResizeMode.CONTAIN}
+                  onReadyForDisplay={() => {
+                    play();
+                    setLoading(false);
+                  }}
+                  showPoster={true}
+                  usePoster={true}
+                  posterSource={{ uri: playVideo?.posterSource }}
+                  videoStyle={playerOpen ? styles.video : styles.videoSmall}
+                  isLooping
+                  onPlaybackStatusUpdate={(status) =>
+                    setPlayerStatus(() => status)
+                  }
+                />
+              </Pressable>
+              {playerOpen ? (
+                <ScrollView style={{ padding: 16 }}>
+                  <StatusBar style="light" />
+                  <Text>{playVideo?.title}</Text>
+                  {/* <IconButton
                 name={"content-save"}
                 size={24}
                 onPress={() => downloadFromUrl(playVideo.src)}
               /> */}
-            </ScrollView>
-          ) : (
-            <View style={styles.flex}>
-              <Pressable
-                onPress={() => setPlayerOpen(true)}
-                style={[styles.child, styles.fullWidthItem]}
-              >
-                <Text numberOfLines={1}>{playVideo?.title}</Text>
-              </Pressable>
-              <View style={styles.child}>
-                {loading ? (
-                  <ActivityIndicator />
-                ) : (
-                  <IconButton
-                    name={playerStatus.isPlaying ? "pause" : "play"}
-                    size={24}
-                    onPress={play}
-                  />
-                )}
-              </View>
-              <View style={styles.child}>
-                <IconButton
-                  name={"close"}
-                  size={24}
-                  onPress={() => setPlayVideo(false)}
-                />
-              </View>
+                </ScrollView>
+              ) : (
+                <View style={styles.flex}>
+                  <Pressable
+                    onPress={() => setPlayerOpen(true)}
+                    style={[styles.child, styles.fullWidthItem]}
+                  >
+                    <Text numberOfLines={1}>{playVideo?.title}</Text>
+                  </Pressable>
+                  <View style={styles.child}>
+                    {loading ? (
+                      <ActivityIndicator />
+                    ) : (
+                      <IconButton
+                        name={playerStatus.isPlaying ? "pause" : "play"}
+                        size={24}
+                        onPress={play}
+                      />
+                    )}
+                  </View>
+                  <View style={styles.child}>
+                    <IconButton
+                      name={"close"}
+                      size={24}
+                      onPress={() => setPlayVideo(false)}
+                    />
+                  </View>
+                </View>
+              )}
             </View>
-          )}
-        </View>
+          </BottomSheet>
+          <View style={{ height: 72 }} />
+        </>
       )}
     </VideoPlayerContext.Provider>
   );
@@ -194,26 +210,16 @@ export const VideoPlayerProvider = ({ children }) => {
 
 export default useVideoPlayer = () => useContext(VideoPlayerContext);
 
-const { height } = Dimensions.get("window");
 const styles = StyleSheet.create({
-  container: {
-    position: "absolute",
-    height: "100%", //height,
-    width: "100%",
-    paddingTop: StatusBarManager.HEIGHT,
-    backgroundColor: "#333333",
+  container: {},
+  containerSmall: {
+    flexDirection: "row",
+    height: 72,
+    justifyContent: "space-between",
   },
   videoContainer: {
     width: "100%",
     height: 220,
-  },
-
-  containerSmall: {
-    position: "fixed",
-    height: 72,
-    width: "auto",
-    flexDirection: "row",
-    justifyContent: "space-between",
   },
   videoContainerSmall: {
     width: 140,
@@ -242,4 +248,91 @@ const styles = StyleSheet.create({
     padding: 16,
     width: "auto", // Reset the width to fill the remaining space
   },
+});
+
+const BottomSheet = ({ isOpen, setOpen, children }) => {
+  const fullHeight = Dimensions.get("window").height + StatusBarManager.HEIGHT;
+  const minHeight = 72;
+  const [animatedHeight] = useState(
+    new Animated.Value(isOpen ? fullHeight : minHeight) // Assuming 72 as default height when closed
+  );
+  const [panResponder, setPanResponder] = useState(null);
+  const open = () => {
+    Animated.timing(animatedHeight, {
+      toValue: fullHeight,
+      duration: 300,
+      useNativeDriver: false,
+    }).start(() => {});
+  };
+  const close = () => {
+    Animated.timing(animatedHeight, {
+      toValue: minHeight,
+      duration: 300,
+      useNativeDriver: false,
+    }).start(() => {});
+  };
+
+  useEffect(() => {
+    const responder = PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderMove: (_, gestureState) => {
+        if (gestureState.dy > 0 && isOpen) {
+          animatedHeight.setValue(gestureState.dy * -1 + fullHeight);
+        }
+
+        if (gestureState.dy < 0 && !isOpen) {
+          animatedHeight.setValue(gestureState.dy * -1 + fullHeight);
+        }
+      },
+      onPanResponderRelease: (_, gestureState) => {
+        if (gestureState.dy > 200) {
+          setOpen(false);
+        } else if (gestureState.dy < -100) {
+          setOpen(true);
+        } else {
+          isOpen ? open() : close();
+        }
+      },
+    });
+    setPanResponder(responder);
+
+    isOpen ? open() : close();
+    // return () => {
+    //   // Clean up
+    //   responder &&
+    //     responder.panHandlers &&
+    //     responder.panHandlers.onResponderRelease(null);
+    // };
+  }, [isOpen]);
+  const { bgColor } = useColor();
+
+  return (
+    <>
+      <Animated.View
+        style={[
+          styless.container,
+          isOpen
+            ? {
+                paddingTop: StatusBarManager.HEIGHT,
+              }
+            : {},
+          { height: animatedHeight, backgroundColor: bgColor()[0] },
+        ]}
+        {...(panResponder && panResponder.panHandlers)}
+      >
+        {children}
+      </Animated.View>
+    </>
+  );
+};
+
+const styless = StyleSheet.create({
+  container: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+
+  // position: "fixed",
 });
