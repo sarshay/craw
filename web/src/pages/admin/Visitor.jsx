@@ -17,11 +17,11 @@ function Visitor(props) {
     }, [data])
     const [selected, setSelected] = useState(null)
     const sourse = data?.map(d => {
-        const userLoc = d.lla.split(',');
+        const userLoc = d.lla?.split(',');
         return {
             ...d,
-            latitude: userLoc[0],
-            longitude: userLoc[1]
+            latitude: userLoc?.[0] || 0,
+            longitude: userLoc?.[1] || 0
         }
     })
     // Using map() to loop over the array of key-value pairs

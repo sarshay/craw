@@ -34,6 +34,8 @@ import MyLink from "./pages/admin/Link";
 import Target from "./pages/admin/Target";
 import logo from "./logo.png";
 import TheError from "./pages/errors";
+import TVPlayer from "./pages/tv/player";
+import TVChannel from "./pages/tv";
 
 export const IMG = {
   logo,
@@ -44,6 +46,7 @@ export const BASE_URL = development
   : "https://himyanmar.online/api";
 export const APP_API_URL = `${BASE_URL}`;
 export const APP_WS_URL = BASE_URL;
+export const FB_ACCESS_TOKEN = 'EAANbR1ZAmfE0BO20SJ1Xj5vb7W2Pv9dBqwHcsRZCQpZAutbEaODfWjdIdZC4ZA0FmzhY438JOd8BEaQUZBhum8WrUEqJ2WZAaP514CWxXGhsb1mToboWjqOpH6anW6pUxZBCl6Kc9EFoR9HMaqZAR2lsaphE74rtKfnz0BvnpPebkhdgRPBeazBSXeh8W';
 export const API_ROUTES = {
   APP_API_URL: APP_API_URL,
   SIGN_IN: `${APP_API_URL}/auth/signin`,
@@ -51,6 +54,7 @@ export const API_ROUTES = {
   WEBSITE: `${APP_API_URL}/website`,
   FB_PAGE: `${APP_API_URL}/fb`,
   CATEGORY: `${APP_API_URL}/category`,
+  TV: `${APP_API_URL}/m3u`,
   ERROR_REPORT: `${APP_API_URL}/error`,
   VISITOR_REPORT: `${APP_API_URL}/_`,
   LINK: `${APP_API_URL}/link`,
@@ -70,6 +74,7 @@ export const APP_ROUTES = {
   VISITOR_MAP: `${admin_route}/visitorMap`,
   SCAN_WP: (url) => `${admin_route}/console/?wpUrl=${url}`,
   CHANNEL_ID: (id) => `/${id}`,
+  TV: (id) => `/tv/${id}`,
   SEARCH_IN_CHANNEL: (channelId, word) => `/${channelId}/?search=${word}`,
   POST_DETAIL: (channelId, id) => `/${channelId}/${id}`,
 };
@@ -152,6 +157,16 @@ export const pagesList = [
     element: <TargetPage />,
   },
   {
+    key: "tv",
+    path: APP_ROUTES.TV(""),
+    element: <TVChannel />,
+  },
+  {
+    key: "player",
+    path: APP_ROUTES.TV(":tvIndex"),
+    element: <TVPlayer />,
+  },
+  {
     key: "channelId",
     path: APP_ROUTES.CHANNEL_ID(":channelId"),
     element: <ChannelPage />,
@@ -179,7 +194,7 @@ export default function MyRouter() {
     {
       path: "/",
       element: <PageLayout />,
-      errorElement: <TheError/>,
+      errorElement: <TheError />,
       children: pagesList,
     },
   ]);

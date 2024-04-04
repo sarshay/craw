@@ -1,8 +1,8 @@
-import { Button, Card, Col, Divider, Image, Input, List, Row, Select, Spin, Typography } from 'antd';
+import { Button, Card, Col, Divider, Image, Input, List, Row, Select, Spin, Tag, Typography, message } from 'antd';
 import Search from 'antd/es/input/Search';
 import React, { useEffect, useState } from 'react';
 import { Route, Routes, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { API_ROUTES, APP_ROUTES } from '../../routes';
+import { API_ROUTES, APP_ROUTES, FB_ACCESS_TOKEN } from '../../routes';
 import { useApi } from '../../hooks/api';
 import { WPForm } from './website';
 import { useLayout, useMyList } from '../../providers/context';
@@ -13,33 +13,43 @@ import { useAdminLayout } from './layout.office';
 
 
 import axios from "axios";
-import { TheHtml } from '../../utils/html';
+import { TheHtml, removeHTMLTags } from '../../utils/html';
 import { PostThumbnail } from '../../components/post';
+import { JSONTree } from 'react-json-tree';
+import facebook from '../../utils/facebook';
+import FacebookLogin from '../../utils/fb';
 function FacebookPage(props) {
     const [selectedPage, setSelectedPage] = useState(null);
-    const [selectedChannelId, setSelectedChannelId] = useState(null);
-    const [feeds, setFeeds] = useState([])
-    const { loading: pageLoading, error: pageError, data: pages } = useApi(API_ROUTES.FB_PAGE)
+    const [selectedChannel, setSelectedChannel] = useState(null);
+    const [feeds, setFeeds] = useState(null)
+    const [pages, setPages] = useState(null)
+
+    useEffect(() => {
+        setPages(p => { return { ...p, loading: true } })
+        facebook(FB_ACCESS_TOKEN).getUserPages().then(({ data }) => {
+            setPages(p => { return { ...p, ...data } })
+        }).catch(error => {
+            setPages(p => { return { ...p, error } })
+        }).finally(() => {
+            setPages(p => { return { ...p, loading: false } })
+        })
+    }, [])
+
     const { website } = useMyList()
     let headersList = {
         "Accept": "*/*"
     }
     useEffect(() => {
         if (selectedPage) {
-            axios.request({
-                // url: "https://graph.facebook.com/v19.0/101199821743033/feed",
-                url: "https://graph.facebook.com/v19.0/me/feed",
-                method: "GET",
-                headers: headersList,
-                params: {
-                    fields: 'full_picture,message',
-                    access_token: selectedPage?.access_token
-                }
-            }).then((res) => {
-                setFeeds(res.data.data)
+            setFeeds(p => { return { ...p, loading: true } })
+            facebook(selectedPage?.access_token).getFeed().then(({ data }) => {
+                setFeeds(p => { return { ...p, ...data } })
+            }).catch(error => {
+                setFeeds(p => { return { ...p, error } })
+            }).finally(() => {
+                setFeeds(p => { return { ...p, loading: false } })
             })
         }
-
     }, [selectedPage])
 
     // https://channelmyanmar.org/wp-json/wp/v2/posts/?after=2024-02-28T10:00:00
@@ -48,38 +58,40 @@ function FacebookPage(props) {
 
     const filterOption = (input, option) =>
         (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
+
     return (
         <Row>
-
             <Col span={6} className='h-screen overflow-y-auto'>
-                <h2>WP</h2>
-                <List className='max-w-sm'>
-                    {website?.map(w => (
-                        <List.Item key={w.id} onClick={() => setSelectedChannelId(w.id)}>
-                            <div className='flex gap-4'>
-                                {w.site_icon_url && <Image src={w.site_icon_url} height={60} width={60} style={{ objectFit: 'cover' }} />}
-                                <Typography.Paragraph className='flex-1' ellipsis={{ rows: 3 }}>{w.name}</Typography.Paragraph>
-                                {/* {f.link} */}
+                <List className='max-w-sm p-4'>
+                    <List.Item className='sticky top-0'>Wordpress</List.Item>
+                    {website.filter(w => w.status == 'active')?.map(w => (
+                        <List.Item key={w.id} onClick={() => setSelectedChannel(w)} extra={w.site_icon_url && <Image src={w.site_icon_url} height={60} width={60} style={{ objectFit: 'cover' }} />}>
+                            <div>
+                                <Typography.Title level={5} className='flex-1' ellipsis={{ rows: 3 }}>{w.name} {w.is18Plus == 'yes' && <Tag color='#ff0000' bordered={false}>18+</Tag>}</Typography.Title>
+                                <Typography.Text type='secondery'>{w.url}</Typography.Text>
                             </div>
                         </List.Item>
                     ))}
                 </List>
             </Col>
-
             <Col span={12} >
-                <PostByWebIid id={selectedChannelId} access_token={selectedPage?.access_token} />
+                {selectedChannel ? <PostByWebIid theWp={selectedChannel} access_token={selectedPage?.access_token} /> : "selected one wordpress"}
             </Col>
             <Col span={6} className='h-screen overflow-y-auto'>
-                <Select showSearch
-                    loading={pageLoading}
-                    placeholder="Select a Page"
-                    optionFilterProp="children"
-                    onChange={(v) => setSelectedPage(pages.find(p => p.id == v))}
-                    value={selectedPage?.id}
-                    filterOption={filterOption}
-                    options={pages?.map(p => { return { value: p.id, label: p.name } })} />
-                <List className='max-w-sm'>
-                    {feeds.map(f => (
+                <div className='sticky top-0 p-4 z-10'>
+                    <Select
+                        className='w-full'
+                        showSearch
+                        loading={pages?.loading}
+                        placeholder="Select a Page"
+                        optionFilterProp="children"
+                        onChange={(v) => setSelectedPage(pages?.data.find(p => p.id == v))}
+                        value={selectedPage?.id}
+                        filterOption={filterOption}
+                        options={pages?.data?.map(p => { return { value: p.id, label: p.name } })} />
+                </div>
+                <List className='p-4' loading={feeds?.loading}>
+                    {feeds?.data?.map(f => (
                         <List.Item key={f.id}>
                             <div className='flex gap-4'>
                                 {f.full_picture && <Image src={f.full_picture} height={100} width={100} style={{ objectFit: 'cover' }} />}
@@ -96,12 +108,12 @@ function FacebookPage(props) {
 
 export default FacebookPage;
 
-function PostByWebIid({ id, access_token }) {
-    const { website } = useMyList();
-    const theWp = website.find(x => x.id == id);
+function PostByWebIid({ theWp, access_token }) {
     const [posts, setPosts] = useState([])
     const [loading, setLoading] = useState(null);
     const [selectedPost, setSelectedPost] = useState([])
+
+    const [messageAPi, contextHolder] = message.useMessage();
     useEffect(() => {
         if (theWp) {
             setLoading(true);
@@ -126,54 +138,60 @@ function PostByWebIid({ id, access_token }) {
     })
 
 
-    const [postedId, setPostedId] = useState([]);
     let headersList = {
         "Accept": "*/*"
     }
-    const postThese = ({ channelId, postId }) => {
-        axios.request({
-            // url: "https://graph.facebook.com/v19.0/101199821743033/feed",
-            url: "https://graph.facebook.com/v19.0/me/feed",
-            method: "POST",
-            headers: headersList,
-            data: {
-                link: `https://himyanmar.online/${channelId}/${postId}/`,
-                access_token: access_token
-            }
-        }).then((res) => {
-            setPostedId((ids) => [...ids, postId])
+    const postThese = async ({ link, message, access_token, postId }) => {
+        await facebook(access_token).postFeed({
+            link,
+            message,
+            access_token,
+        }).then(() => {
             setSelectedPost(old => old.filter(o => o.id !== postId))
-        }).catch(() => {
-
+        }).catch((e) => {
+            messageAPi.error(e.message)
         })
     }
     const postLoop = () => {
+        if (!access_token) {
+            messageAPi.warning('select page')
+            return;
+        }
         if (selectedPost.length > 0) {
             selectedPost.map((p) => {
-                postThese({ channelId: id, postId: p.id })
+                postThese({
+                    link: `https://himyanmar.online/${theWp.id}/${p.id}/`,
+                    message: removeHTMLTags(p.title.rendered),
+                    access_token: access_token,
+                    postId: p.id
+                })
             })
+            return;
         }
     }
     return (
-        <Row>
+        <Row>{contextHolder}
             <Col span={12} className='h-screen overflow-y-auto'>
-                <List loading={loading}>
+                <div className='sticky top-0 p-4'>{theWp?.name}</div>
+                <List loading={loading} className=' p-4'>
                     {posts.map((p) => (
-                        <List.Item onClick={() => selectedToggle(p)}>
-                            <PostThumbnail data={p} wpInfo={theWp} />
+                        <List.Item onClick={() => selectedToggle(p)} className={selectedPost.find(x => x.id == p.id) && 'bg-sky-500/10'}>
+                            <PostThumbnail data={p} wpInfo={theWp} type={"list"} />
                         </List.Item>
                     ))}
                 </List>
             </Col>
-            <Col span={12} className='h-screen overflow-y-auto'>
-                {
-                    selectedPost.map((p) => (
-                        <List.Item onClick={() => selectedToggle(p)}>
-                            <PostThumbnail data={p} wpInfo={theWp} type={"list"} />
-                        </List.Item>
-                    ))
-                }
-                <Button onClick={postLoop} type='primary' className='sticky bottom-0'>Post On Facebook</Button>
+            <Col span={12} className='h-screen overflow-y-auto p-4'>
+                <List>
+                    {
+                        selectedPost.map((p) => (
+                            <List.Item onClick={() => selectedToggle(p)}>
+                                <PostThumbnail data={p} wpInfo={theWp} type={"list"} />
+                            </List.Item>
+                        ))
+                    }
+                    {selectedPost.length > 0 ? <List.Item className='sticky bottom-0'><Button onClick={postLoop} className='sticky bottom-0'>Post On Facebook</Button></List.Item> : 'select min 1 post'}
+                </List>
             </Col>
         </Row>
     )

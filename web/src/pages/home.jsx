@@ -38,7 +38,7 @@ function HomePage(props) {
                                         <Typography.Text type='secondery'>{w.url}</Typography.Text>
                                         <br />
                                         {
-                                            w.categories?.map(c => <Tag>{c.name}</Tag>)
+                                            w.categories?.map(c => <Tag>{c?.name}</Tag>)
                                         }
                                     </div>
                                     {w.site_icon_url && <Avatar src={<img src={w.site_icon_url} onError={({ currentTarget }) => {

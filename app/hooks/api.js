@@ -46,7 +46,7 @@ export function useApi({
           return; // Exit early if data is found in cache
         }
       }
-      console.log("refreshing");
+      console.log("refreshing " + url);
       const response = await fetch(url, {
         params,
         withCredentials: true,

@@ -6,7 +6,7 @@
   <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-  
+
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css" rel="stylesheet">
   <!--
       manifest.json provides metadata used when your web app is installed on a
@@ -24,6 +24,7 @@
     -->
   <?php include_once __DIR__ . '/api/src/helper/seo.php'; ?>
   <!-- Google tag (gtag.js) -->
+  <script src="/hsl.js"></script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-SJDYC1X4C0"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -32,9 +33,20 @@
 
     gtag('config', 'G-SJDYC1X4C0');
   </script>
+
+  <script src="https://connect.facebook.net/en_US/sdk.js"></script>
 </head>
 
 <body>
+  <script>
+    window.fbAsyncInit = function () {
+      FB.init({
+        appId: 944786880494669,
+        xfbml: true,
+        version: "v19.0"
+      });
+    };
+  </script>
   <noscript>You need to enable JavaScript to run this app.</noscript>
   <!-- <script type="text/javascript">
     atOptions = {
@@ -47,6 +59,7 @@
     document.write('<scr' + 'ipt type="text/javascript" src="//www.topcreativeformat.com/0aa932d00816b5aaeb08895d708a5fda/invoke.js"></scr' + 'ipt>');
   </script> -->
   <div id="root"></div>
+
   <!-- <script type="text/javascript">
     atOptions = {
       'key': '0aa932d00816b5aaeb08895d708a5fda',

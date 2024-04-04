@@ -1,0 +1,8 @@
+{
+    "ignore": [
+        "db/*.sql",
+        "db/*.vuerd.json",
+        "lib/*.js",
+        "README"
+    ]
+}

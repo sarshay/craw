@@ -1,5 +1,5 @@
 var development = true;
-export const BASE_URL = development
+export const BASE_URL = false
   ? "http://192.168.110.244/api"
   : "https://himyanmar.online/api";
 export const APP_API_URL = `${BASE_URL}`;

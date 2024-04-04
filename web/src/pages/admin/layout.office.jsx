@@ -28,6 +28,18 @@ const OfficeLayout = () => {
       navigate(page.path)
     }
   }, [page])
+  const fbLogin = () => {
+    window.FB.login(function (response) {
+      console.log(response)
+      if (response.authResponse) {
+        window.FB.api('/me', { fields: 'name, email' }, function (response) {
+          console.log({ fbloginresult: response })
+        });
+      } else {
+        console.log('User cancelled login or did not fully authorize.');
+      }
+    });
+  }
   return (
     <RepoProvider user={user}>
       <LayoutProvider>
@@ -40,7 +52,7 @@ const OfficeLayout = () => {
 
             <div className="sticky top-0">
               <div className="p-2">
-              <Link to={'/'}>Home</Link>
+                <Link to={'/'}>Home</Link>
               </div>
               <Menu
                 theme="dark"
@@ -49,6 +61,8 @@ const OfficeLayout = () => {
                 onSelect={e => setPage(adminPagesList.find(x => x.key == e.key))}
                 items={adminPagesList.filter(p => !p.hide)}
               />
+
+              <Button onClick={fbLogin}>FaceBook Login</Button>
             </div>
           </Sider>
           <Layout>

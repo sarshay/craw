@@ -15,9 +15,6 @@ import {
   RefreshControl,
   VirtualizedList,
 } from "react-native";
-import { API_ROUTES } from "../constant";
-import { useApi } from "../hooks/api";
-import { StatusBar } from "expo-status-bar";
 import GeneralContext from "../providers/GeneralProviter";
 import MyStatusBar from "./../components/MyStatusBar";
 import _ from "lodash";
@@ -33,6 +30,7 @@ const HomeScreen = ({ navigation }) => {
     websites: w,
     websitesLoading,
     refreshWebsites,
+    refreshCategory,
     category,
     categoryLoading,
   } = useContext(GeneralContext);
@@ -75,7 +73,7 @@ const HomeScreen = ({ navigation }) => {
         refreshControl={
           <RefreshControl
             refreshing={websitesLoading}
-            onRefresh={refreshWebsites}
+            onRefresh={(refreshWebsites, refreshCategory)}
           />
         }
         showsVerticalScrollIndicator={false}

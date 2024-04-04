@@ -37,9 +37,9 @@ module.exports = {
           autoVerify: true,
           data: [
             {
-              scheme: "https",
+              scheme: "crow",
               host: "*",
-              pathPrefix: "/records",
+              pathPrefix: "/",
             },
           ],
           category: ["BROWSABLE", "DEFAULT"],

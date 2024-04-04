@@ -35,6 +35,13 @@ export const RepoProvider = ({ children, user }) => {
     data: website,
     setData: setWebsite,
   } = useApi(API_ROUTES.WEBSITE);
+
+  const {
+    loading: tv_loading,
+    error: tv_err,
+    data: tv,
+  } = useApi(API_ROUTES.TV);
+
   if (category_loading || website_loading) {
     return (
       <center>
@@ -57,6 +64,9 @@ export const RepoProvider = ({ children, user }) => {
           website,
           website_loading,
           setWebsite,
+          tv_loading,
+          tv_err,
+          tv,
         }}
       >
         {children}
