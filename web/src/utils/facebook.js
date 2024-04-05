@@ -31,7 +31,7 @@ export default function facebook(accessToken) {
     await axios({
       url: baseUrl + routes.feed,
       method: "POST",
-      data: data,
+      data: { ...data, access_token: accessToken },
       headers: defaultHeader,
     });
   };

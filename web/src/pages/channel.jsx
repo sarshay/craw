@@ -158,21 +158,25 @@ function Page({ theWp }) {
                     {!(searchOpen || searchWord) && <SearchOutlined onClick={() => { setSearchOpen(true) }} />}
                 </Flex>
             </div>
-            <div className='m-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 min-h-96'>
-                {
-                    (posts || []).map((w) => (
-                        <Link key={`${w.id}`} to={`${APP_ROUTES.POST_DETAIL(channelId, w.id)}${currentQuery}`} style={{ display: "block", width: '100%' }}>
-                            <PostThumbnail data={w} wpInfo={theWp} type={type} />
-                        </Link>
-                    ))
-                }
-            </div>
+
 
             <InfiniteScroll
-                loadMore={loadMore}
+                onEnd={loadMore}
                 loading={loading}
                 hasMore={hasMore}
-            />
+                loadingComponent={<center><Spin /></center>}
+                offset={300}
+            >
+                <div className='m-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 min-h-96'>
+                    {
+                        (posts || []).map((w) => (
+                            <Link key={`${w.id}`} to={`${APP_ROUTES.POST_DETAIL(channelId, w.id)}${currentQuery}`} style={{ display: "block", width: '100%' }}>
+                                <PostThumbnail data={w} wpInfo={theWp} type={type} />
+                            </Link>
+                        ))
+                    }
+                </div>
+            </InfiniteScroll>
             <div className='fixed right-0 left-0 bottom-0'>
                 <center>{message}</center>
             </div>

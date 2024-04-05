@@ -16,7 +16,6 @@
     "dayjs": "^1.11.10",
     "m3u8-parser": "^7.1.0",
     "mapbox-gl": "^3.2.0",
-    "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-cookie": "^7.0.2",
     "react-dom": "^18.2.0",
@@ -46,7 +45,6 @@
   "scripts": {
     "start": "react-scripts start",
     "start_ssl": "set HTTPS=true&&npm start",
-    
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

@@ -36,6 +36,7 @@ import logo from "./logo.png";
 import TheError from "./pages/errors";
 import TVPlayer from "./pages/tv/player";
 import TVChannel from "./pages/tv";
+import FacebookConsole from "./pages/admin/facebook";
 
 export const IMG = {
   logo,
@@ -113,7 +114,7 @@ export const adminPagesList = [
     icon: <FacebookFilled />,
     label: "Facebook Page",
     path: APP_ROUTES.FACEBOOK,
-    element: <FacebookPage />,
+    element: <FacebookConsole />,
   },
   {
     key: "visitorLog",
