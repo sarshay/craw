@@ -20,7 +20,7 @@
     "react-cookie": "^7.0.2",
     "react-dom": "^18.2.0",
     "react-icons": "^5.0.1",
-    "react-infinite-scroll-component": "^6.1.0",
+    "react-infinite-scrollable": "^1.0.4",
     "react-json-tree": "^0.18.0",
     "react-map-gl": "^7.1.7",
     "react-player": "^2.15.0",

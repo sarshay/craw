@@ -5,7 +5,8 @@ import { Link, Outlet, unstable_HistoryRouter, useNavigate, useParams, useSearch
 import { APP_ROUTES } from '../routes';
 import Search from 'antd/es/input/Search';
 import wpScan from '../utils/wpScan';
-import InfiniteScroll from '../components/infiniteScroll';
+import InfiniteScrollAble  from 'react-infinite-scrollable';
+
 import { TheHtml } from '../utils/html';
 import { PostThumbnail } from '../components/post';
 import { ArrowLeftOutlined, SearchOutlined } from '@ant-design/icons';
@@ -158,9 +159,7 @@ function Page({ theWp }) {
                     {!(searchOpen || searchWord) && <SearchOutlined onClick={() => { setSearchOpen(true) }} />}
                 </Flex>
             </div>
-
-
-            <InfiniteScroll
+            <InfiniteScrollAble
                 onEnd={loadMore}
                 loading={loading}
                 hasMore={hasMore}
@@ -176,7 +175,7 @@ function Page({ theWp }) {
                         ))
                     }
                 </div>
-            </InfiniteScroll>
+            </InfiniteScrollAble>
             <div className='fixed right-0 left-0 bottom-0'>
                 <center>{message}</center>
             </div>

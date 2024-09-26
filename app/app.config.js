@@ -12,6 +12,7 @@ module.exports = {
     resizeMode: "contain",
     backgroundColor: "#ffffff",
   },
+  plugins: ["expo-build-properties"],
   assetBundlePatterns: ["**/*"],
   ios: {
     supportsTablet: true,
