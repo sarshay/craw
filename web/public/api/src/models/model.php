@@ -10,8 +10,8 @@ function GetData($table, $id = null, $filter = null)
         if ($result) {
             return $result->fetch_assoc();
         } else {
-            httpStatus(500);
             logger($conn->error);
+            httpStatus(500);
         }
     } else {
         $filter_ = [];
@@ -31,8 +31,8 @@ function GetData($table, $id = null, $filter = null)
         if ($result) {
             return $result->fetch_all(MYSQLI_ASSOC);
         } else {
-            httpStatus(500);
             logger($conn->error);
+            httpStatus(500);
         }
     }
     $conn->close();
@@ -40,7 +40,7 @@ function GetData($table, $id = null, $filter = null)
 function InsertData($table, $d)
 {
     global $conn;
-
+    logger($d);
     $columArr = [];
     $dataArr = [];
 
@@ -58,7 +58,8 @@ function InsertData($table, $d)
         $lastId = $conn->insert_id;
         return $conn->query("SELECT * FROM `$table` WHERE `$table`.`id` = $lastId")->fetch_assoc();
     } else {
-        return $conn->error;
+        logger($conn->error);
+        httpStatus(500);
     }
 
     $conn->close();

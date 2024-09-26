@@ -38,11 +38,14 @@ export function PostThumbnail({ data, wpInfo, type }) {
             return (
                 <div
                 >
-                    {img && <img alt="example" src={img} className='h-16 w-16 object-cover float-start' />}
+                    {img && <img alt="example" src={img} className='rounded-md h-16 w-16 object-cover float-start me-4' />}
                     {ago(p.date)}
-                    <Typography.Paragraph ellipsis={{ rows: img ? 4 : 7 }} type='secondery'>
-                        <Typography.Title level={img ? 4 : 3}>{TheHtml(p.title.rendered)}</Typography.Title>
-                        {TheHtml(p.excerpt.rendered)}</Typography.Paragraph>
+                    <Typography.Paragraph ellipsis={{ rows: 3 }}>
+                        {TheHtml(p.title.rendered)}
+                    </Typography.Paragraph>
+                    <Typography.Paragraph ellipsis={{ rows: 3 }} type='secondery'>
+                        {TheHtml(p.excerpt.rendered)}
+                    </Typography.Paragraph>
 
                 </div>)
 

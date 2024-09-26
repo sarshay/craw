@@ -11,7 +11,7 @@ function wpScan({ wpUrl, api_base_path = "/?rest_route=/" }) {
 
   const defaultHeader = {
     withCredentials: false,
-    credentials: 'omit',
+    credentials: "omit",
     maxRedirects: 15,
     // headers: {
     //   "Access-Control-Allow-Origin": "*"
@@ -20,7 +20,7 @@ function wpScan({ wpUrl, api_base_path = "/?rest_route=/" }) {
   const getCategory = async () => {
     return await axios
       .get(`${baseUrl}wp/v2/categories`, {
-        ...defaultHeader
+        ...defaultHeader,
       })
       .then(function (response) {
         return response.data;
@@ -98,34 +98,6 @@ function wpScan({ wpUrl, api_base_path = "/?rest_route=/" }) {
         throw new Error("Error fetching Posts");
       });
   };
-
-  // const getSearch = async (param) => {
-  //   const infoKeyList = [
-  //     "id",
-  //     "title",
-  //     "date",
-  //     "_links",
-  //     "excerpt",
-  //     "categories",
-  //   ];
-  //   return await axios
-  //     .get(`${baseUrl}wp/v2/search`, {
-  //       params: {
-  //         page: 1,
-  //         _fields: `${infoKeyList.join(",")}`,
-  //         _embed: "wp:featuredmedia",
-  //         ...param,
-  //       },
-  //     })
-  //     .then(function (response) {
-  //       return response.data;
-  //     })
-  //     .catch(function (error) {
-  //       errorReport({ error, wpUrl });
-  //       throw new Error("Error fetching Posts");
-  //     });
-  // };
-
   const getPostDetail = async (id) => {
     const infoKeyList = [
       "id",
@@ -153,7 +125,54 @@ function wpScan({ wpUrl, api_base_path = "/?rest_route=/" }) {
         throw new Error("Error fetching Posts");
       });
   };
-  return { getCategory, getInfo, getPost, getPostDetail };
+  const getPage = async (param) => {
+    const infoKeyList = ["id", "title", "date", "excerpt"];
+    return await axios
+      .get(`${baseUrl}wp/v2/pages`, {
+        ...defaultHeader,
+        params: {
+          page: 1,
+          _fields: `${infoKeyList.join(",")}`,
+          _embed: "wp:featuredmedia",
+          ...param,
+        },
+      })
+      .then(function (response) {
+        return response.data;
+      })
+      .catch(function (error) {
+        errorReport({ error, wpUrl });
+        throw new Error("Error fetching Posts");
+      });
+  };
+
+  const getPageDetail = async (id) => {
+    const infoKeyList = ["id", "title", "date", "excerpt", "content"];
+    return await axios
+      .get(`${baseUrl}wp/v2/pages/${id}`, {
+        ...defaultHeader,
+        params: {
+          page: 1,
+          _fields: `${infoKeyList.join(",")}`,
+          _embed: "wp:featuredmedia",
+        },
+      })
+      .then(function (response) {
+        return response.data;
+      })
+      .catch(function (error) {
+        errorReport({ error, wpUrl });
+        throw new Error("Error fetching Posts");
+      });
+  };
+  return {
+    getCategory,
+    getInfo,
+    getPost,
+    getPostDetail,
+    getPage,
+    getPageDetail,
+  };
 }
 
 export default wpScan;

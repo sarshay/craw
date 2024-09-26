@@ -61,7 +61,7 @@ function PostPage(props) {
         })
         .catch((error) => {
           messageAPi.error(error?.message);
-          // setWpError(error?.message)
+          throw Error('No Post')
         })
         .finally(() => {
           setLoading(false);
@@ -115,43 +115,47 @@ function PostPage(props) {
   const { setMedias } = useLayout();
   useEffect(() => {
     if (medias.length > 0) {
-      setMedias({medias, title:postData?.title?.rendered});
+      setMedias({ medias, title: postData?.title?.rendered });
     }
   }, [medias]);
   return (
     <div className="px-4">
       <Is18PlusCover is18Plus={theWp.is18Plus && theWp.is18Plus == "yes"} />
       <Flex justify={"space-between"} align={"center"} className="sticky top-0">
-        <Space align="center" className="py-2">
-          <ArrowLeftOutlined
-            onClick={() =>
-              // navigate(APP_ROUTES.CHANNEL_ID(channelId) + currentQuery)
-              navigate(-1)
-            }
-          />
-          {/* {theWp.site_icon_url ? (
+        <Typography>
+          <Space align="center" className="py-2">
+            <ArrowLeftOutlined
+              onClick={() =>
+                // navigate(APP_ROUTES.CHANNEL_ID(channelId) + currentQuery)
+                navigate(-1)
+              }
+            />
+            {/* {theWp.site_icon_url ? (
             <Avatar src={<img src={theWp.site_icon_url} />} />
           ) : (
             <Avatar>{theWp.name[0]}</Avatar>
           )} */}
-          {theWp.name}
-        </Space>
-        <InfoCircleFilled
-          onClick={() => {
-            Modal.confirm({
-              title: "Content Attribution",
-              content: `Original source credited with link: ${theWp.url}?p=${postId}`,
-              footer: (_, { OkBtn, CancelBtn }) => (
-                <>
-                  <Button target="_blank" href={`${theWp.url}?p=${postId}`}>
-                    Go Original Content
-                  </Button>
-                  <OkBtn />
-                </>
-              ),
-            });
-          }}
-        />
+            {theWp.name}
+          </Space>
+        </Typography>
+        <Typography>
+          <InfoCircleFilled
+            onClick={() => {
+              Modal.confirm({
+                title: "Content Attribution",
+                content: `Original source credited with link: ${theWp.url}?p=${postId}`,
+                footer: (_, { OkBtn, CancelBtn }) => (
+                  <>
+                    <Button target="_blank" href={`${theWp.url}?p=${postId}`}>
+                      Go Original Content
+                    </Button>
+                    <OkBtn />
+                  </>
+                ),
+              });
+            }}
+          />
+        </Typography>
       </Flex>
 
       <div className="read max-w-xl mx-auto">
@@ -175,7 +179,9 @@ function PostPage(props) {
                 width={"100%"}
               />
             )}
-            {TheHtml(postData?.content?.rendered)}
+            <Typography.Text>
+              {TheHtml(postData?.content?.rendered)}
+            </Typography.Text>
           </div>
         )}
 

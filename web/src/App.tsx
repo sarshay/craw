@@ -8,12 +8,12 @@ import { theme, App as Ant } from "antd";
 import { ThemeProvider } from "./providers/context";
 
 function App() {
-  const { useToken } = theme;
-  const { token } = useToken();
-  useEffect(() => {
-    // document.body.style.background = token.bodyBgColor;
-    console.log({ token });
-  }, [token]);
+  // const { useToken } = theme;
+  // const { token } = useToken();
+  // useEffect(() => {
+  //   // document.body.style.background = token.bodyBgColor;
+  //   console.log({ token });
+  // }, [token]);
 
   return (
     <CookiesProvider>

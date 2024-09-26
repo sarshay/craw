@@ -12,6 +12,7 @@ import {
   message,
   Spin,
   Layout,
+  App,
 } from "antd";
 // import connectSocket from "../socket";
 import { getTokenFromLocalStorage } from "../hooks/auth/auth";
@@ -34,6 +35,13 @@ export const RepoProvider = ({ children, user }) => {
     data: website,
     setData: setWebsite,
   } = useApi(API_ROUTES.WEBSITE);
+
+  const {
+    loading: tv_loading,
+    error: tv_err,
+    data: tv,
+  } = useApi(API_ROUTES.TV);
+
   if (category_loading || website_loading) {
     return (
       <center>
@@ -56,6 +64,9 @@ export const RepoProvider = ({ children, user }) => {
           website,
           website_loading,
           setWebsite,
+          tv_loading,
+          tv_err,
+          tv,
         }}
       >
         {children}
@@ -101,11 +112,10 @@ export const useLayout = () => useContext(LayoutContext);
 
 const ThemeContext = createContext(); // Rename the context variable
 export const ThemeProvider = ({ children }) => {
-  const [themeMode, setThemeMode] = useState(localStorage.getItem("themeMode"));
-  var isDark = themeMode == "dark";
+  const [isDark, setIsDark] = useState(false);
   useEffect(() => {
-    localStorage.setItem("themeMode", themeMode);
-  }, [themeMode]);
+    localStorage.setItem("isDark", isDark);
+  }, [isDark]);
   const [hue, setHue] = useState(200);
   // const hue = 180;
   // const hue = 210;
@@ -139,9 +149,13 @@ export const ThemeProvider = ({ children }) => {
     ],
   };
   return (
-    <ThemeContext.Provider value={{ setThemeMode, themeMode, setHue, hue }}>
+    <ThemeContext.Provider value={{ setIsDark, isDark, setHue, hue }}>
       {/* <Slider defaultValue={hue} onChange={(v)=>setHue(v)} max={360}/> */}
-      <ConfigProvider theme={antTheme}>{children}</ConfigProvider>
+      <div data-mode={isDark ? "dark" : "light"}>
+        <App>
+          <ConfigProvider theme={antTheme}>{children}</ConfigProvider>
+        </App>
+      </div>
     </ThemeContext.Provider>
   );
 };

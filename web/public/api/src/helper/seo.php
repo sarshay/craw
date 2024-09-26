@@ -1,9 +1,9 @@
 <?php
 
-$defalutTitle =  "ကျီကန်း";
+$defalutTitle =  "ကျီ:ကန်း";
 $color = "#ffffff";
-$title = "ကျီကန်း";
-$description = "အကုန်သိ";
+$title = "ကျီ:ကန်း";
+$description = "Media Website";
 $imageUrl =  "http://" . $_SERVER['SERVER_NAME'] . "/issets/crow.jpg";
 $keyWords = "စာချေ, sarshay, crow, ကျီးကန်း, ဂျကန်း, ဂျဂန်း";
 $canonical = "http://" . $_SERVER['SERVER_NAME'];
@@ -13,11 +13,26 @@ $mybackendApiUrl = "/";
 include_once __DIR__ . '/connection.php';
 include_once __DIR__ . '/../utility/httpStatus.php';
 include_once __DIR__ . '/../models/website.php';
+include_once __DIR__ . '/../models/model.php';
 $paths =  parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $param = explode('/', $paths);
 array_shift($param);
-if (isset($param[1])) {
-    $title= "hhhhh";
+if (isset($param[0]) && $param[0] == 't') {
+    if (isset($param[1]) && $param[1] !== '') {
+        $linkId = $param[1];
+        $res = GetData('link', $linkId);
+        // var_dump($res);
+        if ($res) {
+            $title = $res["title"];
+            $description = $res["description"];
+            $imageUrl = $res["imageUrl"]; //"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIskXiis51E9dy9AuCWVRoGU_4sUYlwfjJUbFWRyESxA&s";
+            // jsonResponse(200, $res);
+        } else {
+            httpStatus(404);
+        }
+    }
+} elseif (isset($param[0]) && $param[0] == 'admin') {
+} elseif (isset($param[1]) && $param[1] !== '') {
     $channel_id = $param[0]; //explode("_", $_GET['ids'])[0];
     $post_id = $param[1]; //explode("_", $_GET['ids'])[1];
     // $path =  parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);

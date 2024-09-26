@@ -14,3 +14,6 @@ export function TheHtml(html) {
     <div dangerouslySetInnerHTML={{ __html: html }} />
   );
 }
+export function removeHTMLTags(html) {
+  return html.replace(/<[^>]*>/g, "");
+}

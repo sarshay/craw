@@ -45,6 +45,7 @@ const SignInPage = (formData) => {
     console.log("Failed:", errorInfo);
   };
   return (
+    <div className="flex min-h-screen justify-center items-center">
     <Form
       name="basic"
       labelCol={{ span: 8 }}
@@ -86,6 +87,7 @@ const SignInPage = (formData) => {
         </Button>
       </Form.Item>
     </Form>
+    </div>
   );
 };
 

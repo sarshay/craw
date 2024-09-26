@@ -1,13 +1,14 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { Breadcrumb, Layout, Menu, message, theme } from "antd";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Breadcrumb, Button, FloatButton, Layout, Menu, message, theme } from "antd";
+import { Link, Route, Routes, useNavigate } from "react-router-dom";
 import { useApi } from "../../hooks/api";
 import DefaultPage from "../default";
 
 import { Outlet } from "react-router-dom";
-import { RepoProvider } from "../../providers/context";
+import { RepoProvider, useTheme } from "../../providers/context";
 import { useUser } from "../../hooks/auth/user";
 import { adminPagesList } from "../../routes";
+import { MoonFilled } from "@ant-design/icons";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -15,7 +16,7 @@ const { Header, Content, Footer, Sider } = Layout;
 const OfficeLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [page, setPage] = useState(null)
-
+  const { isDark, setIsDark } = useTheme()
   const { user, authenticated } = useUser();
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -27,6 +28,18 @@ const OfficeLayout = () => {
       navigate(page.path)
     }
   }, [page])
+  const fbLogin = () => {
+    window.FB.login(function (response) {
+      console.log(response)
+      if (response.authResponse) {
+        window.FB.api('/me', { fields: 'name, email' }, function (response) {
+          console.log({ fbloginresult: response })
+        });
+      } else {
+        console.log('User cancelled login or did not fully authorize.');
+      }
+    });
+  }
   return (
     <RepoProvider user={user}>
       <LayoutProvider>
@@ -38,7 +51,9 @@ const OfficeLayout = () => {
           >
 
             <div className="sticky top-0">
-              <div className="demo-logo-vertical" />
+              <div className="p-2">
+                <Link to={'/'}>Home</Link>
+              </div>
               <Menu
                 theme="dark"
                 defaultSelectedKeys={adminPagesList?.[0]?.key}
@@ -46,13 +61,15 @@ const OfficeLayout = () => {
                 onSelect={e => setPage(adminPagesList.find(x => x.key == e.key))}
                 items={adminPagesList.filter(p => !p.hide)}
               />
+
+              <Button onClick={fbLogin}>FaceBook Login</Button>
             </div>
           </Sider>
           <Layout>
             {/* <Header style={{ padding: "0px 16px", background: colorBgContainer }}>
               Header
             </Header> */}
-            <Content className="min-h-screen px-16">
+            <Content className="min-h-screen">
               {/* <Breadcrumb style={{ margin: "16px 0" }}>
                 <Breadcrumb.Item>User</Breadcrumb.Item>
                 <Breadcrumb.Item>Bill</Breadcrumb.Item>
@@ -65,6 +82,8 @@ const OfficeLayout = () => {
           </Layout>
         </Layout>
       </LayoutProvider>
+
+      <FloatButton onClick={() => setIsDark(!isDark)} icon={<MoonFilled />} />
     </RepoProvider>
   );
 };
