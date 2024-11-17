@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      "@constant": ["./src/constant.tsx"],
+      "@service/*": ["./src/service/*"],
+      "@config":["./app.config.ts"],
+      "@schema":["./schema/index.ts"],
+      "@admin/*":["./src/app/(admin)/*"],
+      "@interface":["./prisma/interfaces.ts"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/(web)/note/page.tsx", "src/components/ActionBar.tsx", "src/app/(web)/github/page.jsx", "src/app/(web)/(static)/privacy/page.mdx"],
+  "exclude": ["node_modules"]
+}

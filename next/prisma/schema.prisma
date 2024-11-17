@@ -1,0 +1,127 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
+}
+
+generator typescriptInterfaces {
+  provider = "prisma-generator-typescript-interfaces"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Website {
+  id          Int       @id @default(autoincrement())
+  baseUrl     String    @unique
+  title       String    @db.VarChar(200)
+  logo        String?   @db.VarChar(200)
+  except      String?   @db.Text
+  isDeleted   Boolean   @default(false)
+  createdDt   DateTime? @default(now())
+  updatedDt   DateTime? @default(now()) @updatedAt
+  isAdultOnly Boolean   @default(false)
+
+  Error    Error[]
+  Category CategoryOnWebsite[]
+  Tag      TagOnWebsite[]
+}
+
+model Image {
+  id        Int       @id @default(autoincrement())
+  caption   String?
+  fileName  String
+  createdDt DateTime? @default(now())
+
+  Category Category[]
+}
+
+model Category {
+  id      Int    @id @default(autoincrement())
+  name    String
+  order   Int    @default(0)
+  imageId Int?
+  image   Image? @relation(fields: [imageId], references: [id])
+
+  CategoryOnWebsite CategoryOnWebsite[]
+}
+
+model CategoryOnWebsite {
+  id         Int @id @default(autoincrement())
+  websiteId  Int
+  categoryId Int
+
+  Website  Website  @relation(fields: [websiteId], references: [id])
+  Category Category @relation(fields: [categoryId], references: [id])
+
+  @@map("mapCategoryWebsite") // Specify the name of the intermediate table
+}
+
+model Tag {
+  id      Int    @id @default(autoincrement())
+  name    String
+  order   Int    @default(0)
+  imageId Int?
+
+  TagOnWebsite TagOnWebsite[]
+}
+
+model TagOnWebsite {
+  id        Int @id @default(autoincrement())
+  websiteId Int
+  tagId     Int
+
+  Website Website @relation(fields: [websiteId], references: [id])
+  Tag     Tag     @relation(fields: [tagId], references: [id])
+
+  @@map("mapTagWebsite") // Specify the name of the intermediate table
+}
+
+model Error {
+  id        Int       @id @default(autoincrement())
+  httpCode  Int
+  message   String
+  stack     String
+  websiteId Int
+  userIp    String
+  createdDt DateTime? @default(now())
+
+  Website Website @relation(fields: [websiteId], references: [id])
+}
+
+model FakeMeta {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String    @db.Text
+  ogImageUrl  String    @db.Text
+  redirectUrl String
+  createdDt   DateTime? @default(now())
+}
+
+model VisitLog {
+  id               Int       @id @default(autoincrement())
+  visitorId        Int
+  trackCode        String
+  fullUrl          String
+  userIp           String
+  userAgent        String
+  screenResolution String
+  latitude         Float?
+  longitude        Float?
+  accuracy         Float?
+  createdDt        DateTime? @default(now())
+
+  Visitor Visitor @relation(fields: [visitorId], references: [id])
+}
+
+model Visitor {
+  id        Int       @id @default(autoincrement())
+  uid       String
+  nickname  String
+  userIp    String
+  userAgent String
+  createdDt DateTime? @default(now())
+
+  VisitLog VisitLog[]
+}
